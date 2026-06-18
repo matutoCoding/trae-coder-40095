@@ -1,0 +1,295 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 120rpx;
+}
+
+.header {
+  background: linear-gradient(180deg, $color-primary 0%, $color-primary-light 100%);
+  padding: 48rpx $page-padding 80rpx;
+  position: relative;
+}
+
+.welcomeRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-lg;
+}
+
+.welcomeText {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+}
+
+.subText {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 8rpx;
+}
+
+.noticeBtn {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: $radius-round;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.noticeIcon {
+  font-size: 36rpx;
+}
+
+.noticeDot {
+  position: absolute;
+  top: 12rpx;
+  right: 12rpx;
+  width: 16rpx;
+  height: 16rpx;
+  background: $color-error;
+  border-radius: $radius-round;
+  border: 2rpx solid $color-primary;
+}
+
+.quotaCard {
+  background: $color-bg-card;
+  border-radius: $radius-xl;
+  padding: $spacing-lg;
+  margin: 0 $page-padding;
+  margin-top: -48rpx;
+  box-shadow: $shadow-card;
+  position: relative;
+  z-index: 1;
+}
+
+.quotaHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.teamName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+  flex: 1;
+}
+
+.quotaBadge {
+  background: $color-quota-bg;
+  padding: 6rpx 16rpx;
+  border-radius: $radius-xs;
+  margin-left: $spacing-sm;
+}
+
+.quotaBadgeText {
+  font-size: $font-size-xs;
+  color: $color-quota;
+  font-weight: $font-weight-medium;
+}
+
+.quotaDisplay {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: $spacing-md;
+}
+
+.remainingNumber {
+  font-size: 64rpx;
+  font-weight: $font-weight-bold;
+  color: $color-quota;
+  line-height: 1;
+}
+
+.totalText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+  margin-left: 8rpx;
+}
+
+.progressBar {
+  width: 100%;
+  height: 16rpx;
+  background: $color-bg-gray;
+  border-radius: $radius-round;
+  overflow: hidden;
+  margin-bottom: $spacing-sm;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, $color-quota 0%, $color-quota-light 100%);
+  border-radius: $radius-round;
+  transition: width $transition-base;
+}
+
+.quotaFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.usedText {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.detailLink {
+  font-size: $font-size-sm;
+  color: $color-primary;
+}
+
+.dateSection {
+  padding: $spacing-lg $page-padding;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.dateScroll {
+  margin: 0 -$page-padding;
+  padding: 0 $page-padding;
+}
+
+.dateList {
+  display: flex;
+  gap: $spacing-md;
+  padding-bottom: $spacing-sm;
+}
+
+.dateItem {
+  flex-shrink: 0;
+  width: 120rpx;
+  padding: $spacing-md 0;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  text-align: center;
+  border: 2rpx solid transparent;
+  transition: all $transition-fast;
+
+  &.active {
+    border-color: $color-primary;
+    background: rgba(255, 107, 53, 0.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.dateDisplay {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+
+  .active & {
+    color: $color-primary;
+  }
+}
+
+.dateWeekday {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 6rpx;
+
+  .active & {
+    color: $color-primary;
+  }
+}
+
+.todayTag {
+  display: inline-block;
+  padding: 2rpx 10rpx;
+  background: $color-primary;
+  color: $color-text-white;
+  font-size: 20rpx;
+  border-radius: $radius-xs;
+  margin-top: 6rpx;
+}
+
+.routesSection {
+  padding: 0 $page-padding;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.moreLink {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.quickActions {
+  padding: $spacing-lg $page-padding;
+}
+
+.actionGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $spacing-md;
+}
+
+.actionItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $spacing-md 0;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  transition: all $transition-fast;
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.actionIcon {
+  font-size: 48rpx;
+  margin-bottom: $spacing-xs;
+}
+
+.actionText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.noticeSection {
+  padding: 0 $page-spacing $page-spacing;
+}
+
+.noticeCard {
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.08) 0%, rgba(255, 140, 90, 0.08) 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  border: 1rpx solid rgba(255, 107, 53, 0.2);
+}
+
+.noticeTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-primary;
+  margin-bottom: $spacing-sm;
+}
+
+.noticeContent {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.6;
+}

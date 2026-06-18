@@ -1,0 +1,164 @@
+@use '@/styles/variables.scss' as *;
+
+.bookingCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.routeInfo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  flex: 1;
+  min-width: 0;
+}
+
+.routeName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  @include text-ellipsis;
+  flex: 1;
+}
+
+.statusTag {
+  padding: 6rpx 16rpx;
+  border-radius: $radius-xs;
+  flex-shrink: 0;
+}
+
+.statusText {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+}
+
+.fromWaitlist {
+  background: rgba(155, 89, 182, 0.1);
+  padding: 6rpx 12rpx;
+  border-radius: $radius-xs;
+  flex-shrink: 0;
+  margin-left: $spacing-sm;
+}
+
+.fromWaitlistText {
+  font-size: $font-size-xs;
+  color: $color-quota;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin-bottom: $spacing-sm;
+}
+
+.dateText {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.timeText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+}
+
+.codeRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-md;
+  background: $color-primary-bg;
+  border-radius: $radius-md;
+  margin-top: $spacing-sm;
+}
+
+.codeLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.codeValue {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  letter-spacing: 4rpx;
+}
+
+.equipmentRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $spacing-xs;
+  margin-top: $spacing-sm;
+  padding-top: $spacing-sm;
+  border-top: 1rpx solid $color-divider;
+}
+
+.equipmentLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.equipmentItem {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.actions {
+  display: flex;
+  gap: $spacing-md;
+  margin-top: $spacing-lg;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.actionBtn {
+  flex: 1;
+  height: $button-height-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-button;
+  transition: all $transition-fast;
+
+  &:active {
+    transform: scale(0.96);
+    opacity: 0.9;
+  }
+}
+
+.primaryBtn {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+}
+
+.btnText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-white;
+}
+
+.secondaryBtn {
+  background: $color-bg-gray;
+  border: 2rpx solid $color-border;
+}
+
+.btnSecondaryText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+}

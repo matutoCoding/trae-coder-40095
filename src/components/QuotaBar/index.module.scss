@@ -1,0 +1,75 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-sm;
+}
+
+.label {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.quotaInfo {
+  display: flex;
+  align-items: baseline;
+}
+
+.remainingNumber {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+}
+
+.totalText {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.bar {
+  width: 100%;
+  background: $color-bg-gray;
+  border-radius: $radius-round;
+  overflow: hidden;
+
+  &.sm {
+    height: 8rpx;
+  }
+
+  &.md {
+    height: 16rpx;
+  }
+
+  &.lg {
+    height: 24rpx;
+  }
+}
+
+.progress {
+  height: 100%;
+  border-radius: $radius-round;
+  transition: width $transition-base;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: $spacing-sm;
+}
+
+.usedText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.percentText {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+}

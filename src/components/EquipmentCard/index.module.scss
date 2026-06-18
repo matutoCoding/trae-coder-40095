@@ -1,0 +1,158 @@
+@use '@/styles/variables.scss' as *;
+
+.equipmentCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  overflow: hidden;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  height: 200rpx;
+  overflow: hidden;
+  background: $color-bg-gray;
+}
+
+.equipmentImage {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.categoryBadge {
+  position: absolute;
+  top: $spacing-sm;
+  left: $spacing-sm;
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: $radius-md;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: $shadow-card;
+}
+
+.categoryIcon {
+  font-size: 32rpx;
+}
+
+.content {
+  padding: $spacing-md;
+}
+
+.name {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 8rpx;
+  @include text-ellipsis;
+}
+
+.description {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  line-height: 1.4;
+  @include text-ellipsis-multi(2);
+  margin-bottom: $spacing-sm;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
+}
+
+.priceInfo {
+  display: flex;
+  align-items: baseline;
+}
+
+.price {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.priceUnit {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-left: 4rpx;
+}
+
+.stockInfo {
+  padding: 4rpx 12rpx;
+  border-radius: $radius-xs;
+  background: rgba(0, 180, 42, 0.1);
+
+  &.lowStock {
+    background: rgba(255, 125, 0, 0.1);
+  }
+
+  &.outOfStock {
+    background: rgba(245, 63, 63, 0.1);
+  }
+}
+
+.stockText {
+  font-size: $font-size-xs;
+  color: $color-success;
+
+  .lowStock & {
+    color: $color-warning;
+  }
+
+  .outOfStock & {
+    color: $color-error;
+  }
+}
+
+.deposit {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.rentBtn {
+  width: 100%;
+  height: $button-height-md;
+  margin-top: $spacing-md;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-button;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-fast;
+
+  &:active {
+    transform: scale(0.96);
+    opacity: 0.9;
+  }
+
+  &.disabled {
+    background: $color-bg-gray;
+    cursor: not-allowed;
+
+    &:active {
+      transform: none;
+      opacity: 1;
+    }
+  }
+}
+
+.rentBtnText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-white;
+
+  .disabled & {
+    color: $color-text-disabled;
+  }
+}

@@ -1,0 +1,244 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 160rpx;
+}
+
+.headerImage {
+  width: 100%;
+  height: 400rpx;
+  position: relative;
+}
+
+.routeImage {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.levelBadge {
+  position: absolute;
+  top: $spacing-lg;
+  right: $spacing-lg;
+  padding: 10rpx 24rpx;
+  border-radius: $radius-xs;
+}
+
+.levelText {
+  color: $color-text-white;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+}
+
+.infoCard {
+  background: $color-bg-card;
+  border-radius: $radius-xl $radius-xl 0 0;
+  margin-top: -40rpx;
+  position: relative;
+  z-index: 1;
+  padding: $spacing-xl $page-padding;
+}
+
+.routeName {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-sm;
+}
+
+.routeDesc {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.6;
+  margin-bottom: $spacing-lg;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-md;
+  padding: $spacing-md;
+  background: $color-bg-gray;
+  border-radius: $radius-lg;
+}
+
+.infoItem {
+  text-align: center;
+}
+
+.infoValue {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.infoLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 6rpx;
+}
+
+.section {
+  padding: $spacing-lg $page-padding;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.dateSelector {
+  display: flex;
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
+  overflow-x: auto;
+}
+
+.dateItem {
+  flex-shrink: 0;
+  width: 110rpx;
+  padding: $spacing-md 0;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  text-align: center;
+  border: 2rpx solid transparent;
+  transition: all $transition-fast;
+
+  &.active {
+    border-color: $color-primary;
+    background: rgba(255, 107, 53, 0.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.dateDisplay {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+
+  .active & {
+    color: $color-primary;
+  }
+}
+
+.dateWeekday {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 4rpx;
+
+  .active & {
+    color: $color-primary;
+  }
+}
+
+.todayTag {
+  display: inline-block;
+  padding: 2rpx 8rpx;
+  background: $color-primary;
+  color: $color-text-white;
+  font-size: 18rpx;
+  border-radius: $radius-xs;
+  margin-top: 4rpx;
+}
+
+.slotSection {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  padding: $spacing-lg;
+}
+
+.bottomBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: $color-bg-card;
+  padding: $spacing-md $page-padding;
+  padding-bottom: calc(#{$spacing-md} + env(safe-area-inset-bottom));
+  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  z-index: 100;
+}
+
+.quotaInfo {
+  flex: 1;
+}
+
+.quotaLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.quotaValue {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-quota;
+  margin-top: 4rpx;
+}
+
+.bookBtn {
+  flex: 2;
+  height: $button-height-lg;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-button;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-fast;
+
+  &:active {
+    transform: scale(0.96);
+    opacity: 0.9;
+  }
+
+  &.disabled {
+    background: $color-bg-gray;
+
+    &:active {
+      transform: none;
+      opacity: 1;
+    }
+  }
+}
+
+.waitlistBtn {
+  flex: 2;
+  height: $button-height-lg;
+  background: linear-gradient(135deg, $color-warning 0%, #FF9F43 100%);
+  border-radius: $radius-button;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-fast;
+
+  &:active {
+    transform: scale(0.96);
+    opacity: 0.9;
+  }
+}
+
+.btnText {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+.disabledText {
+  color: $color-text-disabled;
+}
+
+.selectedSlot {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-top: 4rpx;
+}

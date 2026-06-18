@@ -1,0 +1,215 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 120rpx;
+}
+
+.tabBar {
+  display: flex;
+  background: $color-bg-card;
+  padding: 0 $page-padding;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: $shadow-float;
+}
+
+.tabItem {
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all $transition-fast;
+
+  &.active {
+    .tabText {
+      color: $color-primary;
+      font-weight: $font-weight-semibold;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 48rpx;
+      height: 6rpx;
+      background: $color-primary;
+      border-radius: $radius-round;
+    }
+  }
+}
+
+.tabText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  transition: all $transition-fast;
+}
+
+.content {
+  padding: $spacing-md $page-padding;
+}
+
+.myRentals {
+  margin-bottom: $spacing-lg;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.sectionCount {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.rentalCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+}
+
+.rentalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-sm;
+}
+
+.rentalName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.statusTag {
+  padding: 6rpx 16rpx;
+  border-radius: $radius-xs;
+}
+
+.statusText {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+}
+
+.rented {
+  background: rgba(22, 93, 255, 0.1);
+  color: $color-info;
+}
+
+.returned {
+  background: rgba(0, 180, 42, 0.1);
+  color: $color-success;
+}
+
+.overdue {
+  background: rgba(245, 63, 63, 0.1);
+  color: $color-error;
+}
+
+.rentalInfo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.infoLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.infoValue {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+}
+
+.rentalFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: $spacing-sm;
+  border-top: 1rpx solid $color-divider;
+}
+
+.priceInfo {
+  display: flex;
+  align-items: baseline;
+  gap: 4rpx;
+}
+
+.price {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.priceUnit {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.returnBtn {
+  padding: 12rpx 32rpx;
+  background: linear-gradient(135deg, $color-secondary 0%, $color-secondary-light 100%);
+  border-radius: $radius-button;
+  transition: all $transition-fast;
+
+  &:active {
+    transform: scale(0.96);
+    opacity: 0.9;
+  }
+}
+
+.returnBtnText {
+  font-size: $font-size-sm;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+.equipmentGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-md;
+}
+
+.emptyState {
+  padding: 120rpx 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.emptyIcon {
+  font-size: 96rpx;
+  margin-bottom: $spacing-md;
+  opacity: 0.5;
+}
+
+.emptyText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}

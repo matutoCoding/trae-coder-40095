@@ -1,0 +1,65 @@
+@use '@/styles/variables.scss' as *;
+
+.memberItem {
+  display: flex;
+  align-items: center;
+  padding: $spacing-md 0;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: $spacing-md;
+}
+
+.avatarText {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: 6rpx;
+}
+
+.userName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  @include text-ellipsis;
+  flex: 1;
+}
+
+.roleTag {
+  padding: 4rpx 12rpx;
+  border-radius: $radius-xs;
+  flex-shrink: 0;
+}
+
+.roleText {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+}
+
+.usedQuota {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}

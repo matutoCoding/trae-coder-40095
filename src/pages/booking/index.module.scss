@@ -1,0 +1,219 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 120rpx;
+}
+
+.tabBar {
+  display: flex;
+  background: $color-bg-card;
+  padding: 0 $page-padding;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: $shadow-float;
+}
+
+.tabItem {
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all $transition-fast;
+
+  &.active {
+    .tabText {
+      color: $color-primary;
+      font-weight: $font-weight-semibold;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 48rpx;
+      height: 6rpx;
+      background: $color-primary;
+      border-radius: $radius-round;
+    }
+  }
+}
+
+.tabText {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  transition: all $transition-fast;
+}
+
+.badge {
+  position: absolute;
+  top: 16rpx;
+  right: 20%;
+  min-width: 32rpx;
+  height: 32rpx;
+  padding: 0 8rpx;
+  background: $color-error;
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .badgeText {
+    font-size: 20rpx;
+    color: $color-text-white;
+    font-weight: $font-weight-medium;
+  }
+}
+
+.content {
+  padding: $spacing-md $page-padding;
+}
+
+.waitlistSection {
+  margin-bottom: $spacing-lg;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.sectionCount {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.waitlistCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  border-left: 6rpx solid $color-warning;
+}
+
+.waitlistHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-sm;
+}
+
+.waitlistRoute {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.positionBadge {
+  background: rgba(255, 125, 0, 0.1);
+  padding: 6rpx 16rpx;
+  border-radius: $radius-xs;
+}
+
+.positionText {
+  font-size: $font-size-xs;
+  color: $color-warning;
+  font-weight: $font-weight-medium;
+}
+
+.waitlistInfo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.waitlistDate {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.waitlistTime {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.waitlistActions {
+  display: flex;
+  gap: $spacing-md;
+}
+
+.actionBtn {
+  flex: 1;
+  height: $button-height-md;
+  border-radius: $radius-button;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-fast;
+
+  &:active {
+    transform: scale(0.96);
+    opacity: 0.9;
+  }
+}
+
+.primaryBtn {
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+}
+
+.secondaryBtn {
+  background: $color-bg-gray;
+  border: 2rpx solid $color-border;
+}
+
+.btnText {
+  font-size: $font-size-sm;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+.btnSecondaryText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+}
+
+.emptyState {
+  padding: 120rpx 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.emptyIcon {
+  font-size: 96rpx;
+  margin-bottom: $spacing-md;
+  opacity: 0.5;
+}
+
+.emptyText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}
+
+.loadingMore {
+  padding: $spacing-lg 0;
+  text-align: center;
+}
+
+.loadingText {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}

@@ -1,0 +1,276 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 200rpx;
+}
+
+.content {
+  padding: $spacing-md $page-padding;
+}
+
+.infoCard {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.sectionIcon {
+  font-size: $font-size-lg;
+}
+
+.infoRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: $spacing-sm 0;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.infoLabel {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+  flex-shrink: 0;
+}
+
+.infoValue {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+  text-align: right;
+  flex: 1;
+  margin-left: $spacing-md;
+}
+
+.highlightValue {
+  color: $color-primary;
+  font-weight: $font-weight-semibold;
+}
+
+.quotaValue {
+  color: $color-quota;
+  font-weight: $font-weight-semibold;
+}
+
+.equipmentSection {
+  margin-top: $spacing-md;
+}
+
+.equipmentList {
+  margin-top: $spacing-sm;
+}
+
+.equipmentItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-sm 0;
+}
+
+.equipmentName {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.equipmentPrice {
+  font-size: $font-size-sm;
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}
+
+.addEquipment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-md;
+  border: 2rpx dashed $color-border;
+  border-radius: $radius-md;
+  margin-top: $spacing-sm;
+  transition: all $transition-fast;
+
+  &:active {
+    border-color: $color-primary;
+    background: rgba(255, 107, 53, 0.05);
+  }
+}
+
+.addIcon {
+  font-size: $font-size-md;
+  margin-right: $spacing-xs;
+}
+
+.addText {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.summaryCard {
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.08) 0%, rgba(255, 140, 90, 0.08) 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-top: $spacing-md;
+  border: 1rpx solid rgba(255, 107, 53, 0.2);
+}
+
+.summaryRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-sm;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.summaryLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.summaryValue {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+}
+
+.summaryTotal {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+}
+
+.bottomBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: $color-bg-card;
+  padding: $spacing-md $page-padding;
+  padding-bottom: calc(#{$spacing-md} + env(safe-area-inset-bottom));
+  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  z-index: 100;
+}
+
+.priceInfo {
+  flex: 1;
+}
+
+.priceLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.priceValue {
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  margin-top: 4rpx;
+}
+
+.priceUnit {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-left: 4rpx;
+}
+
+.confirmBtn {
+  flex: 1.5;
+  height: $button-height-lg;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-button;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-fast;
+
+  &:active {
+    transform: scale(0.96);
+    opacity: 0.9;
+  }
+
+  &.disabled {
+    background: $color-bg-gray;
+
+    &:active {
+      transform: none;
+      opacity: 1;
+    }
+  }
+}
+
+.btnText {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+.disabledText {
+  color: $color-text-disabled;
+}
+
+.tipText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: $spacing-sm;
+  line-height: 1.5;
+}
+
+.quotaBar {
+  margin-top: $spacing-md;
+  padding: $spacing-md;
+  background: $color-quota-bg;
+  border-radius: $radius-md;
+}
+
+.quotaBarTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-sm;
+}
+
+.quotaBarLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.quotaBarValue {
+  font-size: $font-size-sm;
+  color: $color-quota;
+  font-weight: $font-weight-semibold;
+}
+
+.quotaBarProgress {
+  width: 100%;
+  height: 12rpx;
+  background: rgba(155, 89, 182, 0.2);
+  border-radius: $radius-round;
+  overflow: hidden;
+}
+
+.quotaBarFill {
+  height: 100%;
+  background: $color-quota;
+  border-radius: $radius-round;
+  transition: width $transition-base;
+}

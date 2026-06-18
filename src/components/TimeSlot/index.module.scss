@@ -1,0 +1,158 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  width: 100%;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
+}
+
+.slotItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-md $spacing-sm;
+  border-radius: $radius-md;
+  background: $color-bg-card;
+  border: 2rpx solid $color-border;
+  transition: all $transition-fast;
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.timeText {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  line-height: 1.4;
+}
+
+.statusText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 6rpx;
+}
+
+.available {
+  border-color: $color-border;
+  background: $color-bg-card;
+
+  .timeText {
+    color: $color-text-primary;
+  }
+
+  .statusText {
+    color: $color-success;
+  }
+
+  &:active {
+    border-color: $color-primary;
+    background: rgba(255, 107, 53, 0.05);
+  }
+}
+
+.full {
+  background: $color-bg-gray;
+  border-color: $color-border;
+  opacity: 0.6;
+
+  .timeText {
+    color: $color-text-tertiary;
+    text-decoration: line-through;
+  }
+
+  .statusText {
+    color: $color-text-tertiary;
+  }
+}
+
+.waitlist {
+  border-color: $color-warning;
+  background: rgba(255, 125, 0, 0.05);
+
+  .timeText {
+    color: $color-text-primary;
+  }
+
+  .statusText {
+    color: $color-warning;
+  }
+
+  &:active {
+    background: rgba(255, 125, 0, 0.1);
+  }
+}
+
+.selected {
+  border-color: $color-primary;
+  background: rgba(255, 107, 53, 0.1);
+
+  .timeText {
+    color: $color-primary;
+    font-weight: $font-weight-semibold;
+  }
+
+  .statusText {
+    color: $color-primary;
+  }
+}
+
+.closed {
+  background: $color-bg-gray;
+  border-color: $color-border;
+  opacity: 0.4;
+
+  .timeText,
+  .statusText {
+    color: $color-text-disabled;
+  }
+}
+
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: $spacing-lg;
+  padding-top: $spacing-sm;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+}
+
+.legendDot {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: $radius-round;
+
+  &.available {
+    background: $color-bg-card;
+    border: 2rpx solid $color-border;
+  }
+
+  &.full {
+    background: $color-bg-gray;
+  }
+
+  &.waitlist {
+    background: rgba(255, 125, 0, 0.2);
+    border: 2rpx solid $color-warning;
+  }
+
+  &.selected {
+    background: $color-primary;
+  }
+}
+
+.legendText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
