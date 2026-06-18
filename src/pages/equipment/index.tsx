@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View, Text } from '@tarojs/components';
 import Taro, { useDidShow } from '@tarojs/taro';
 import classNames from 'classnames';
@@ -37,6 +37,71 @@ const EquipmentPage: React.FC = () => {
   const setCurrentUser = useEquipmentStore((s) => s.setCurrentUser);
   const returnEquipment = useEquipmentStore((s) => s.returnEquipment);
 
+  const rentalGroups = useMemo(() => {
+    const groups: Array<{
+      bookingId: string | null;
+      routeName: string;
+      date: string;
+      timeRange: string;
+      status: 'rented' | 'returned' | 'cancelled';
+      statusText: string;
+      returnSource?: 'checkin_return' | 'booking_cancel' | 'manual';
+      rentals: RentalRecord[];
+      totalCost: number;
+    }> = [];
+
+    const bookingMap = new Map<string | null, RentalRecord[]>();
+    myRentals.forEach((rental) => {
+      const key = rental.bookingId || null;
+      if (!bookingMap.has(key)) {
+        bookingMap.set(key, []);
+      }
+      bookingMap.get(key)!.push(rental);
+    });
+
+    bookingMap.forEach((rentals, bookingId) => {
+      const firstRental = rentals[0];
+      const allReturned = rentals.every((r) => r.status === 'returned');
+      const allCancelled = rentals.every((r) => r.status === 'cancelled');
+      const anyRented = rentals.some((r) => r.status === 'rented' || r.status === 'overdue');
+
+      let status: 'rented' | 'returned' | 'cancelled' = 'rented';
+      let statusText = '进行中';
+      if (allCancelled) {
+        status = 'cancelled';
+        statusText = '已取消';
+      } else if (allReturned) {
+        status = 'returned';
+        statusText = '已归还';
+      } else if (anyRented) {
+        status = 'rented';
+        statusText = '进行中';
+      }
+
+      const totalCost = rentals.reduce((sum, r) => sum + (r.totalCost || 0), 0);
+
+      groups.push({
+        bookingId,
+        routeName: firstRental.bookingRouteName || '单独租赁',
+        date: firstRental.bookingDate || '',
+        timeRange: firstRental.bookingTimeRange || '',
+        status,
+        statusText,
+        returnSource: firstRental.returnSource,
+        rentals,
+        totalCost
+      });
+    });
+
+    groups.sort((a, b) => {
+      const aFirst = a.rentals[0];
+      const bFirst = b.rentals[0];
+      return new Date(bFirst.rentTime).getTime() - new Date(aFirst.rentTime).getTime();
+    });
+
+    return groups;
+  }, [myRentals]);
+
   const handleReturnEquipment = async (rentalId: string, equipmentName: string) => {
     Taro.showModal({
       title: '归还确认',
@@ -55,101 +120,106 @@ const EquipmentPage: React.FC = () => {
     });
   };
 
-  const renderRentalCard = (rental: RentalRecord, index: number) => {
-    const canReturn = rental.status === 'rented' || rental.status === 'overdue';
-    const showCost = rental.status === 'returned' || rental.status === 'cancelled';
-    const isCancelled = rental.status === 'cancelled';
-    const hasBooking = !!rental.bookingId;
+  const getGroupStatusClass = (status: string) => {
+    const map: Record<string, string> = {
+      rented: styles.statusInProgress,
+      returned: styles.statusReturned,
+      cancelled: styles.statusCancelled
+    };
+    return map[status] || '';
+  };
+
+  const renderRentalGroup = (group: typeof rentalGroups[0], groupIndex: number) => {
+    const hasRentedItems = group.rentals.some((r) => r.status === 'rented' || r.status === 'overdue');
+    const allCancelled = group.status === 'cancelled';
 
     return (
-      <View key={rental.id} className={styles.rentalCard} style={{ animationDelay: `${index * 50}ms` }}>
-        <View className={styles.rentalHeader}>
-          <View style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <Text className={styles.rentalName}>{rental.equipmentName}</Text>
-            {isCancelled && (
-              <View className={classNames(styles.sourceTag, styles.sourceCancel)}>
-                <Text className={styles.sourceText}>取消释放</Text>
-              </View>
-            )}
-            {rental.returnSource === 'checkin_return' && (
-              <View className={classNames(styles.sourceTag, styles.sourceCheckin)}>
-                <Text className={styles.sourceText}>到店归还</Text>
-              </View>
-            )}
+      <View key={group.bookingId || `standalone-${groupIndex}`} className={styles.rentalGroup}>
+        <View className={styles.rentalGroupHeader}>
+          <Text className={styles.rentalGroupIcon}>🧗</Text>
+          <View className={styles.rentalGroupInfo}>
+            <Text className={styles.rentalGroupTitle}>
+              {group.routeName}
+              {group.returnSource === 'checkin_return' && (
+                <Text className={classNames(styles.groupSourceTag, styles.sourceCheckin)}>到店归还</Text>
+              )}
+              {group.returnSource === 'booking_cancel' && (
+                <Text className={classNames(styles.groupSourceTag, styles.sourceCancel)}>取消释放</Text>
+              )}
+            </Text>
+            <Text className={styles.rentalGroupSubtitle}>
+              {group.date ? `${group.date} · ` : ''}
+              {group.timeRange || '单独租赁'}
+            </Text>
           </View>
-          <View className={classNames(styles.statusTag, styles[rental.status])}>
-            <Text className={styles.statusText}>{rental.statusText}</Text>
+          <View className={classNames(styles.rentalGroupStatus, getGroupStatusClass(group.status))}>
+            <Text>{group.statusText}</Text>
           </View>
         </View>
 
-        {hasBooking ? (
-          <View className={styles.bookingRelation}>
-            <Text className={styles.bookingIcon}>🧗</Text>
-            <View className={styles.bookingInfo}>
-              <Text className={styles.bookingRoute}>
-                关联预约：{rental.bookingRouteName || '岩壁道'}
-              </Text>
-              <Text className={styles.bookingTime}>
-                {rental.bookingDate ? `${rental.bookingDate} · ` : ''}
-                {rental.bookingTimeRange || ''}
+        <View className={styles.rentalGroupBody}>
+          {group.rentals.map((rental) => (
+            <View key={rental.id} className={styles.groupEquipItem}>
+              <View className={styles.groupEquipInfo}>
+                <Text className={styles.groupEquipName}>{rental.equipmentName}</Text>
+                <Text className={styles.groupEquipMeta}>
+                  x{rental.quantity} · ¥{rental.price}/时
+                  {rental.deposit > 0 ? ` · 押金¥${rental.deposit}` : ''}
+                </Text>
+              </View>
+              <Text
+                className={classNames(
+                  styles.groupEquipPrice,
+                  allCancelled && styles.groupEquipPriceFree
+                )}
+              >
+                {allCancelled ? '未产生费用' : `¥ ${(rental.totalCost || 0).toFixed(2)}`}
               </Text>
             </View>
-          </View>
-        ) : (
-          <Text className={styles.noRelation}>· 单独租赁（未关联预约）</Text>
-        )}
-
-        <View className={styles.rentalInfo}>
-          <View className={styles.infoItem}>
-            <Text className={styles.infoLabel}>数量</Text>
-            <Text className={styles.infoValue}>x{rental.quantity}</Text>
-          </View>
-          <View className={styles.infoItem}>
-            <Text className={styles.infoLabel}>单价</Text>
-            <Text className={styles.infoValue}>¥{rental.price}/时</Text>
-          </View>
-          <View className={styles.infoItem}>
-            <Text className={styles.infoLabel}>押金</Text>
-            <Text className={styles.infoValue}>¥{rental.deposit}</Text>
-          </View>
-          <View className={styles.infoItem}>
-            <Text className={styles.infoLabel}>租赁时间</Text>
-            <Text className={styles.infoValue}>{formatDateTime(rental.rentTime, 'MM-DD HH:mm')}</Text>
-          </View>
+          ))}
         </View>
 
-        {showCost && (
-          <View className={styles.costRow}>
-            <Text className={styles.costLabel}>
-              {isCancelled ? '释放状态' : '租赁费用'}
-            </Text>
-            <Text className={styles.costValue}>
-              {isCancelled ? '未产生费用' : `¥ ${(rental.totalCost || 0).toFixed(2)}`}
+        <View className={styles.rentalGroupFooter}>
+          <View>
+            <Text className={styles.groupTotalLabel}>
+              {allCancelled ? '状态' : '租赁费用合计'}
             </Text>
           </View>
-        )}
-
-        <View className={styles.rentalFooter}>
-          <View className={styles.priceInfo}>
-            {canReturn ? (
-              <Text className={styles.price}>
-                预估 ¥{rental.price * rental.quantity}
-                <Text className={styles.priceUnit}>/时起</Text>
-              </Text>
+          <View className={styles.groupFooterMeta}>
+            {hasRentedItems ? (
+              <View
+                className={styles.groupReturnBtn}
+                onClick={() => {
+                  const rented = group.rentals.filter(
+                    (r) => r.status === 'rented' || r.status === 'overdue'
+                  );
+                  if (rented.length === 1) {
+                    handleReturnEquipment(rented[0].id, rented[0].equipmentName);
+                  } else {
+                    Taro.showToast({ title: '请逐件归还装备', icon: 'none' });
+                  }
+                }}
+              >
+                <Text>立即归还</Text>
+              </View>
             ) : (
-              <Text className={styles.priceUnit} style={{ fontSize: 24 }}>
-                预计归还：{formatDateTime(rental.expectedReturnTime, 'MM-DD HH:mm')}
-              </Text>
+              <>
+                <Text
+                  className={classNames(
+                    styles.groupTotalValue,
+                    allCancelled && styles.groupTotalValueFree
+                  )}
+                >
+                  {allCancelled ? '已取消释放' : `¥ ${group.totalCost.toFixed(2)}`}
+                </Text>
+                <Text className={styles.groupFooterTime}>
+                  {group.rentals[0].returnTime
+                    ? `归还于 ${formatDateTime(group.rentals[0].returnTime, 'MM-DD HH:mm')}`
+                    : `租赁于 ${formatDateTime(group.rentals[0].rentTime, 'MM-DD HH:mm')}`}
+                </Text>
+              </>
             )}
           </View>
-          {canReturn && (
-            <View
-              className={styles.returnBtn}
-              onClick={() => handleReturnEquipment(rental.id, rental.equipmentName)}
-            >
-              <Text className={styles.returnBtnText}>立即归还</Text>
-            </View>
-          )}
         </View>
       </View>
     );
@@ -206,13 +276,13 @@ const EquipmentPage: React.FC = () => {
 
         {activeTab === 'my' && (
           <View className={styles.myRentals}>
-            {myRentals.length === 0 ? (
+            {rentalGroups.length === 0 ? (
               <View className={styles.emptyState}>
                 <Text className={styles.emptyIcon}>🎒</Text>
                 <Text className={styles.emptyText}>暂无租赁记录</Text>
               </View>
             ) : (
-              myRentals.map((rental, index) => renderRentalCard(rental, index))
+              rentalGroups.map((group, index) => renderRentalGroup(group, index))
             )}
           </View>
         )}

@@ -342,3 +342,212 @@
   color: $color-text-secondary;
   line-height: 1.6;
 }
+
+.settleMask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.settleSheet {
+  width: 100%;
+  background: $color-bg-white;
+  border-radius: $radius-xl $radius-xl 0 0;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.settleHeader {
+  padding: $spacing-lg;
+  border-bottom: 1rpx solid $color-divider;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.settleTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+}
+
+.settleClose {
+  font-size: 40rpx;
+  color: $color-text-tertiary;
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settleBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-lg;
+}
+
+.settleSection {
+  margin-bottom: $spacing-lg;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.settleSectionTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+  padding-left: $spacing-sm;
+  border-left: 6rpx solid $color-success;
+}
+
+.settleInfoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-sm 0;
+  border-bottom: 1rpx dashed $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.settleInfoLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.settleInfoValue {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.settleEquipList {
+  background: $color-bg-gray;
+  border-radius: $radius-md;
+  overflow: hidden;
+}
+
+.settleEquipItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.settleEquipInfo {
+  flex: 1;
+}
+
+.settleEquipName {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+  margin-bottom: 4rpx;
+}
+
+.settleEquipMeta {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.settleEquipSource {
+  font-size: 20rpx;
+  padding: 2rpx 10rpx;
+  border-radius: $radius-round;
+  background: rgba(0, 180, 42, 0.12);
+  color: $color-success;
+}
+
+.settleEquipCost {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: $font-weight-semibold;
+}
+
+.settleTotalRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md;
+  background: linear-gradient(135deg, rgba(0, 180, 42, 0.08) 0%, rgba(46, 196, 182, 0.08) 100%);
+  border-radius: $radius-md;
+  margin-top: $spacing-md;
+}
+
+.settleTotalLabel {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+}
+
+.settleTotalValue {
+  font-size: $font-size-xl;
+  color: $color-success;
+  font-weight: $font-weight-bold;
+}
+
+.settleQuotaRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md;
+  background: rgba(255, 107, 53, 0.06);
+  border-radius: $radius-md;
+}
+
+.settleQuotaLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.settleQuotaValue {
+  font-size: $font-size-md;
+  color: $color-primary;
+  font-weight: $font-weight-semibold;
+}
+
+.settleFooter {
+  padding: $spacing-md $spacing-lg calc(env(safe-area-inset-bottom) + 20rpx);
+  border-top: 1rpx solid $color-divider;
+  flex-shrink: 0;
+  background: $color-bg-white;
+}
+
+.settleConfirmBtn {
+  width: 100%;
+  height: 96rpx;
+  background: linear-gradient(135deg, $color-success 0%, darken($color-success, 8%) 100%);
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settleConfirmBtnText {
+  font-size: $font-size-lg;
+  color: $color-text-white;
+  font-weight: $font-weight-bold;
+}

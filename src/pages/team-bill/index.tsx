@@ -93,6 +93,8 @@ const TeamBillPage: React.FC = () => {
         const selected = teams[res.tapIndex];
         if (selected && selected.id !== currentTeamId) {
           setCurrentTeam(selected.id);
+          setSelectedMonth(MONTH_LIST[0].key);
+          setSelectedType('all');
           setSelectedMemberId('all');
           setExpandedRecordId(null);
           Taro.showToast({ title: `已切换到${selected.name}`, icon: 'none' });
@@ -181,6 +183,41 @@ const TeamBillPage: React.FC = () => {
     return (m.usedQuota / totalQuota) * 100;
   };
 
+  const selectedMember = useMemo(() => {
+    if (selectedMemberId === 'all') return undefined;
+    return members.find((m) => m.userId === selectedMemberId);
+  }, [selectedMemberId, members]);
+
+  const memberMonthStats = useMemo(() => {
+    if (!selectedMember) return null;
+    const memberRecords = monthRecords.filter((r) => r.userId === selectedMemberId);
+    const deductRecords = memberRecords.filter((r) => r.type === 'deduct');
+    const refundRecords = memberRecords.filter((r) => r.type === 'refund');
+    const totalDeduct = deductRecords.reduce((sum, r) => sum + r.amount, 0);
+    const totalRefund = refundRecords.reduce((sum, r) => sum + r.amount, 0);
+    const netUsed = totalDeduct - totalRefund;
+
+    const bookingIds = new Set<string>();
+    let totalEquipFee = 0;
+    memberRecords.forEach((r) => {
+      if (r.relatedBookingId) {
+        bookingIds.add(r.relatedBookingId);
+        const rentals = useEquipmentStore.getState().getRentalsByBookingId(r.relatedBookingId);
+        totalEquipFee += rentals.reduce((s, rental) => s + (rental.totalCost || 0), 0);
+      }
+    });
+
+    return {
+      deductCount: deductRecords.length,
+      totalDeduct,
+      refundCount: refundRecords.length,
+      totalRefund,
+      netUsed,
+      bookingCount: bookingIds.size,
+      totalEquipFee
+    };
+  }, [selectedMember, selectedMemberId, monthRecords]);
+
   const currentMonthLabel = MONTH_LIST.find((m) => m.key === selectedMonth)?.label || selectedMonth;
   const currentTypeLabel = TYPE_FILTERS.find((t) => t.key === selectedType)?.label || '全部类型';
   const currentMemberLabel =
@@ -248,54 +285,118 @@ const TeamBillPage: React.FC = () => {
 
       <ScrollView scrollY enhanced showScrollbar={false}>
         <View className={styles.section}>
-          <View className={styles.sectionHeader}>
-            <Text className={styles.sectionTitle}>成员用量统计</Text>
-            <Text className={styles.sectionCount}>
-              {members.length}人 · 合计 {totalMemberUsed} 次
-              {diffReconcile !== 0 ? `（差额${diffReconcile}）` : ''}
-            </Text>
-          </View>
-          {members.map((member) => (
-            <View key={member.id} className={styles.memberSummaryItem}>
-              <View className={styles.memberAvatar} style={{ background: member.avatarColor }}>
-                <Text className={styles.memberInitial}>{member.userName.charAt(0)}</Text>
-              </View>
-              <View className={styles.memberSummaryInfo}>
-                <View className={styles.memberSummaryNameRow}>
-                  <Text className={styles.memberSummaryName}>{member.userName}</Text>
-                  <View className={styles.memberRoleTag}>
-                    <Text className={styles.memberRoleText}>{member.roleText}</Text>
-                  </View>
+          {selectedMember && memberMonthStats ? (
+            <View className={styles.memberDetailCard}>
+              <View className={styles.memberDetailHeader}>
+                <View
+                  className={styles.memberDetailAvatar}
+                  style={{ background: selectedMember.avatarColor }}
+                >
+                  <Text className={styles.memberDetailInitial}>
+                    {selectedMember.userName.charAt(0)}
+                  </Text>
                 </View>
-                <View className={styles.memberSummaryProgress}>
-                  <View className={styles.memberSummaryBar}>
-                    <View
-                      className={styles.memberSummaryFill}
-                      style={{ width: `${getMemberUsagePercent(member)}%` }}
-                    />
-                  </View>
-                  <Text className={styles.memberSummaryValue}>
-                    {member.usedQuota} / {totalQuota}
+                <View className={styles.memberDetailInfo}>
+                  <Text className={styles.memberDetailName}>{selectedMember.userName}</Text>
+                  <Text className={styles.memberDetailRole}>{selectedMember.roleText}</Text>
+                  <Text className={styles.memberDetailTotal}>
+                    累计已使用 <strong>{selectedMember.usedQuota}</strong> 次
+                  </Text>
+                </View>
+              </View>
+
+              <View className={styles.memberDetailStats}>
+                <View className={classNames(styles.memberDetailStat, styles.memberDetailStatDeduct)}>
+                  <Text className={styles.memberDetailStatValue}>-{memberMonthStats.totalDeduct}</Text>
+                  <Text className={styles.memberDetailStatLabel}>本月扣减</Text>
+                </View>
+                <View className={classNames(styles.memberDetailStat, styles.memberDetailStatRefund)}>
+                  <Text className={styles.memberDetailStatValue}>+{memberMonthStats.totalRefund}</Text>
+                  <Text className={styles.memberDetailStatLabel}>本月退还</Text>
+                </View>
+                <View className={classNames(styles.memberDetailStat, styles.memberDetailStatNet)}>
+                  <Text className={styles.memberDetailStatValue}>{memberMonthStats.netUsed}</Text>
+                  <Text className={styles.memberDetailStatLabel}>净使用</Text>
+                </View>
+                <View className={classNames(styles.memberDetailStat, styles.memberDetailStatEquip)}>
+                  <Text className={styles.memberDetailStatValue}>¥{memberMonthStats.totalEquipFee.toFixed(0)}</Text>
+                  <Text className={styles.memberDetailStatLabel}>装备费</Text>
+                </View>
+              </View>
+
+              <View className={styles.memberDetailSubInfo}>
+                <View className={styles.memberDetailSubItem}>
+                  <Text className={styles.memberDetailSubLabel}>本月预约</Text>
+                  <Text className={styles.memberDetailSubValue}>{memberMonthStats.bookingCount} 次</Text>
+                </View>
+                <View className={styles.memberDetailSubItem}>
+                  <Text className={styles.memberDetailSubLabel}>扣减笔数</Text>
+                  <Text className={styles.memberDetailSubValue}>{memberMonthStats.deductCount} 笔</Text>
+                </View>
+                <View className={styles.memberDetailSubItem}>
+                  <Text className={styles.memberDetailSubLabel}>退还笔数</Text>
+                  <Text className={styles.memberDetailSubValue}>{memberMonthStats.refundCount} 笔</Text>
+                </View>
+                <View className={styles.memberDetailSubItem}>
+                  <Text className={styles.memberDetailSubLabel}>占总额度</Text>
+                  <Text className={styles.memberDetailSubValue}>
+                    {totalQuota > 0 ? ((selectedMember.usedQuota / totalQuota) * 100).toFixed(1) : 0}%
                   </Text>
                 </View>
               </View>
             </View>
-          ))}
-          <View
-            className={classNames(
-              styles.reconcileTag,
-              diffReconcile !== 0 && styles.reconcileWarn
-            )}
-          >
-            <Text
-              className={classNames(
-                styles.reconcileTagText,
-                diffReconcile !== 0 && styles.reconcileWarnText
-              )}
-            >
-              {diffReconcile === 0 ? '✅ 成员合计 = 已使用，口径一致' : `⚠️ 存在差额 ${diffReconcile} 次，建议核对流水`}
-            </Text>
-          </View>
+          ) : (
+            <>
+              <View className={styles.sectionHeader}>
+                <Text className={styles.sectionTitle}>成员用量统计</Text>
+                <Text className={styles.sectionCount}>
+                  {members.length}人 · 合计 {totalMemberUsed} 次
+                  {diffReconcile !== 0 ? `（差额${diffReconcile}）` : ''}
+                </Text>
+              </View>
+              {members.map((member) => (
+                <View key={member.id} className={styles.memberSummaryItem}>
+                  <View className={styles.memberAvatar} style={{ background: member.avatarColor }}>
+                    <Text className={styles.memberInitial}>{member.userName.charAt(0)}</Text>
+                  </View>
+                  <View className={styles.memberSummaryInfo}>
+                    <View className={styles.memberSummaryNameRow}>
+                      <Text className={styles.memberSummaryName}>{member.userName}</Text>
+                      <View className={styles.memberRoleTag}>
+                        <Text className={styles.memberRoleText}>{member.roleText}</Text>
+                      </View>
+                    </View>
+                    <View className={styles.memberSummaryProgress}>
+                      <View className={styles.memberSummaryBar}>
+                        <View
+                          className={styles.memberSummaryFill}
+                          style={{ width: `${getMemberUsagePercent(member)}%` }}
+                        />
+                      </View>
+                      <Text className={styles.memberSummaryValue}>
+                        {member.usedQuota} / {totalQuota}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              ))}
+              <View
+                className={classNames(
+                  styles.reconcileTag,
+                  diffReconcile !== 0 && styles.reconcileWarn
+                )}
+              >
+                <Text
+                  className={classNames(
+                    styles.reconcileTagText,
+                    diffReconcile !== 0 && styles.reconcileWarnText
+                  )}
+                >
+                  {diffReconcile === 0 ? '✅ 成员合计 = 已使用，口径一致' : `⚠️ 存在差额 ${diffReconcile} 次，建议核对流水`}
+                </Text>
+              </View>
+            </>
+          )}
         </View>
 
         <View className={styles.section}>

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { View, Text, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import classNames from 'classnames';
@@ -6,7 +6,7 @@ import styles from './index.module.scss';
 import { useTeamStore } from '@/store/useTeamStore';
 import TeamMemberItem from '@/components/TeamMemberItem';
 import { formatDateTime } from '@/utils/time';
-import type { QuotaType, TeamMember } from '@/types/team';
+import type { QuotaType, TeamMember, QuotaRecord } from '@/types/team';
 
 const TeamPage: React.FC = () => {
   const {
@@ -30,6 +30,23 @@ const TeamPage: React.FC = () => {
   const totalMemberUsed = useMemo(() => {
     return members.reduce((sum, m) => sum + m.usedQuota, 0);
   }, [members]);
+
+  const lastRecordBalance = useMemo(() => {
+    const allRecords = getQuotaRecords(currentTeamId);
+    if (allRecords.length === 0) return 0;
+    return allRecords[allRecords.length - 1].balanceAfter;
+  }, [currentTeamId, getQuotaRecords]);
+
+  const recentRecords = useMemo(() => {
+    const allRecords = getQuotaRecords(currentTeamId);
+    return allRecords.slice(-5).reverse();
+  }, [currentTeamId, getQuotaRecords]);
+
+  const balanceFromTeam = remainingQuota;
+  const balanceFromRecords = lastRecordBalance;
+  const balanceFromCalculation = totalQuota - usedQuota;
+  const isBalanced = balanceFromTeam === balanceFromRecords && balanceFromRecords === balanceFromCalculation;
+  const memberDiff = usedQuota - totalMemberUsed;
 
   const handleSwitchTeam = () => {
     if (teams.length <= 1) {
@@ -162,6 +179,100 @@ const TeamPage: React.FC = () => {
           </View>
         </View>
         <Text className={styles.billEntryArrow}>›</Text>
+      </View>
+
+      <View className={styles.reconcileCard}>
+        <View className={styles.reconcileHeader}>
+          <Text className={styles.reconcileTitle}>
+            <Text className={styles.reconcileTitleIcon}>🔍</Text>
+            额度对账
+          </Text>
+          <Text className={styles.reconcileAction} onClick={() => Taro.navigateTo({ url: '/pages/team-bill/index' })}>
+            查看详情 ›
+          </Text>
+        </View>
+
+        <View className={styles.reconcileGrid}>
+          <View className={classNames(styles.reconcileItem, styles.reconcileItemActive)}>
+            <Text className={styles.reconcileItemValue}>{remainingQuota}</Text>
+            <Text className={styles.reconcileItemLabel}>团队剩余</Text>
+          </View>
+          <View className={styles.reconcileItem}>
+            <Text className={styles.reconcileItemValue}>{lastRecordBalance}</Text>
+            <Text className={styles.reconcileItemLabel}>流水余额</Text>
+          </View>
+          <View className={styles.reconcileItem}>
+            <Text className={styles.reconcileItemValue}>{balanceFromCalculation}</Text>
+            <Text className={styles.reconcileItemLabel}>计算余额</Text>
+          </View>
+        </View>
+
+        <View className={styles.reconcileFlow}>
+          <Text className={styles.reconcileFlowLabel}>三边对账</Text>
+          <Text
+            className={classNames(
+              styles.reconcileFlowValue,
+              isBalanced ? styles.reconcileFlowSuccess : styles.reconcileFlowWarn
+            )}
+          >
+            {isBalanced ? '✅ 完全一致' : `⚠️ 存在差异（团队${balanceFromTeam} / 流水${balanceFromRecords} / 计算${balanceFromCalculation}）`}
+          </Text>
+        </View>
+
+        <View className={styles.reconcileFlow}>
+          <Text className={styles.reconcileFlowLabel}>成员合计</Text>
+          <Text
+            className={classNames(
+              styles.reconcileFlowValue,
+              memberDiff === 0 ? styles.reconcileFlowSuccess : styles.reconcileFlowWarn
+            )}
+          >
+            {memberDiff === 0
+              ? `✅ 成员合计 ${totalMemberUsed} = 已使用 ${usedQuota}`
+              : `⚠️ 差额 ${memberDiff} 次（成员合计${totalMemberUsed} / 已使用${usedQuota}）`}
+          </Text>
+        </View>
+
+        <View className={styles.reconcileChain}>
+          <Text className={styles.reconcileChainTitle}>最近流水闭环（最新 ← 更早）</Text>
+          {recentRecords.map((record, index) => (
+            <View key={record.id}>
+              <View className={styles.chainItem}>
+                <View className={styles.chainDot} />
+                <View className={styles.chainContent}>
+                  <Text className={styles.chainDesc}>{record.description}</Text>
+                  <Text className={styles.chainBalance}>
+                    {formatDateTime(record.createdAt, 'MM-DD HH:mm')} · {record.userName}
+                  </Text>
+                </View>
+                <Text
+                  className={classNames(
+                    styles.chainAmount,
+                    record.type === 'deduct' && styles.chainAmountDeduct,
+                    record.type === 'refund' && styles.chainAmountRefund,
+                    record.type === 'recharge' && styles.chainAmountRecharge
+                  )}
+                >
+                  {record.type === 'deduct' ? '-' : '+'}
+                  {record.amount}
+                </Text>
+              </View>
+              {index < recentRecords.length - 1 && <View className={styles.chainLine} />}
+            </View>
+          ))}
+          <View className={styles.chainItem}>
+            <View className={styles.chainDot} style={{ background: '#00B42A' }} />
+            <View className={styles.chainContent}>
+              <Text className={styles.chainDesc} style={{ color: '#00B42A', fontWeight: 500 }}>
+                当前余额（最后一笔流水后）
+              </Text>
+              <Text className={styles.chainBalance}>与团队剩余额度一致</Text>
+            </View>
+            <Text className={styles.chainAmount} style={{ color: '#00B42A', fontWeight: 600 }}>
+              {lastRecordBalance}
+            </Text>
+          </View>
+        </View>
       </View>
 
       <ScrollView scrollY enhanced showScrollbar={false}>

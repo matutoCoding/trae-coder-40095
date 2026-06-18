@@ -460,3 +460,127 @@
 .reconcileWarnText {
   color: $color-warning;
 }
+
+.memberDetailCard {
+  padding: $spacing-lg;
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.06) 0%, rgba(114, 46, 209, 0.06) 100%);
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.memberDetailHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.memberDetailAvatar {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.memberDetailInitial {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+}
+
+.memberDetailInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.memberDetailName {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-bottom: 4rpx;
+}
+
+.memberDetailRole {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-bottom: 4rpx;
+}
+
+.memberDetailTotal {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.memberDetailTotal strong {
+  color: $color-quota;
+  font-weight: $font-weight-semibold;
+}
+
+.memberDetailStats {
+  display: flex;
+  background: $color-bg-white;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  gap: $spacing-sm;
+}
+
+.memberDetailStat {
+  flex: 1;
+  text-align: center;
+}
+
+.memberDetailStatValue {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  line-height: 1.2;
+  margin-bottom: 4rpx;
+}
+
+.memberDetailStatLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.memberDetailStatDeduct .memberDetailStatValue {
+  color: $color-error;
+}
+
+.memberDetailStatRefund .memberDetailStatValue {
+  color: $color-success;
+}
+
+.memberDetailStatNet .memberDetailStatValue {
+  color: $color-quota;
+}
+
+.memberDetailStatEquip .memberDetailStatValue {
+  color: $color-info;
+}
+
+.memberDetailSubInfo {
+  display: flex;
+  justify-content: space-between;
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1rpx dashed $color-divider;
+}
+
+.memberDetailSubItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.memberDetailSubLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.memberDetailSubValue {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+}

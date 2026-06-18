@@ -436,3 +436,173 @@
   color: $color-quota;
   font-weight: $font-weight-medium;
 }
+
+.reconcileCard {
+  margin: $spacing-md $page-padding;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  padding: $spacing-lg;
+}
+
+.reconcileHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.reconcileTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.reconcileTitleIcon {
+  font-size: $font-size-lg;
+}
+
+.reconcileAction {
+  font-size: $font-size-xs;
+  color: $color-quota;
+  font-weight: $font-weight-medium;
+}
+
+.reconcileGrid {
+  display: flex;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+}
+
+.reconcileItem {
+  flex: 1;
+  background: $color-bg-gray;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  text-align: center;
+}
+
+.reconcileItemValue {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  line-height: 1.2;
+  margin-bottom: 4rpx;
+}
+
+.reconcileItemLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.reconcileItemActive {
+  background: $color-quota-bg;
+
+  .reconcileItemValue {
+    color: $color-quota;
+  }
+}
+
+.reconcileFlow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm 0;
+  border-top: 1rpx solid $color-divider;
+}
+
+.reconcileFlowLabel {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  flex-shrink: 0;
+}
+
+.reconcileFlowValue {
+  font-size: $font-size-xs;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+  flex: 1;
+  text-align: right;
+}
+
+.reconcileFlowSuccess {
+  color: $color-success;
+}
+
+.reconcileFlowWarn {
+  color: $color-error;
+}
+
+.reconcileChain {
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1rpx solid $color-divider;
+}
+
+.reconcileChainTitle {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  margin-bottom: $spacing-sm;
+}
+
+.chainItem {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm 0;
+}
+
+.chainDot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: $radius-round;
+  background: $color-quota;
+  flex-shrink: 0;
+}
+
+.chainLine {
+  width: 2rpx;
+  height: 28rpx;
+  background: $color-divider;
+  margin-left: 7rpx;
+}
+
+.chainContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.chainDesc {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  @include text-ellipsis;
+}
+
+.chainBalance {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 2rpx;
+}
+
+.chainAmount {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  flex-shrink: 0;
+}
+
+.chainAmountDeduct {
+  color: $color-error;
+}
+
+.chainAmountRefund {
+  color: $color-success;
+}
+
+.chainAmountRecharge {
+  color: $color-primary;
+}
