@@ -131,7 +131,8 @@ export const useEquipmentStore = create<EquipmentState>((set, get) => ({
 
     const now = new Date();
     const rentHours = (now.getTime() - new Date(rental.rentTime).getTime()) / (1000 * 60 * 60);
-    const totalCost = Math.ceil(rentHours) * rental.price * rental.quantity;
+    const billableHours = Math.max(1, Math.ceil(rentHours));
+    const totalCost = billableHours * rental.price * rental.quantity;
 
     set((state) => ({
       equipments: state.equipments.map((e) =>

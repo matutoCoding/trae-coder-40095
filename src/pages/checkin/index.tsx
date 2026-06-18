@@ -17,12 +17,10 @@ const CheckinPage: React.FC = () => {
   const [booking, setBooking] = useState<Booking | null>(null);
   const [relatedRentals, setRelatedRentals] = useState<RentalRecord[]>([]);
   const [teamName, setTeamName] = useState('');
-  const [takenEquipments, setTakenEquipments] = useState<Record<string, boolean>>({});
   const [, forceTick] = useState(0);
 
   const getBookingByCode = useBookingStore((s) => s.getBookingByCode);
   const checkInBooking = useBookingStore((s) => s.checkInBooking);
-  const startVenueSession = useBookingStore((s) => s.startVenueSession);
   const completeVenueSession = useBookingStore((s) => s.completeVenueSession);
   const getRentalsByBookingId = useEquipmentStore((s) => s.getRentalsByBookingId);
   const teams = useTeamStore((s) => s.teams);
@@ -43,9 +41,6 @@ const CheckinPage: React.FC = () => {
       setRelatedRentals(getRentalsByBookingId(found.id));
       const team = teams.find((t) => t.id === found.teamId);
       setTeamName(team?.name || '');
-      const taken: Record<string, boolean> = {};
-      found.equipmentRentals?.forEach((e) => (taken[e.equipmentId] = false));
-      setTakenEquipments(taken);
     } else {
       Taro.showToast({ title: '未找到该签到码的预约', icon: 'none' });
       setBooking(null);
@@ -64,9 +59,6 @@ const CheckinPage: React.FC = () => {
           setRelatedRentals(getRentalsByBookingId(found.id));
           const team = teams.find((t) => t.id === found.teamId);
           setTeamName(team?.name || '');
-          const taken: Record<string, boolean> = {};
-          found.equipmentRentals?.forEach((e) => (taken[e.equipmentId] = false));
-          setTakenEquipments(taken);
         } else {
           Taro.showToast({ title: '未找到预约', icon: 'none' });
         }
@@ -88,46 +80,18 @@ const CheckinPage: React.FC = () => {
     if (!booking) return;
     const result = await checkInBooking(booking.id);
     if (result.success) {
-      Taro.showToast({ title: '签到成功', icon: 'success' });
+      Taro.showToast({ title: '核销成功，已开始攀岩！', icon: 'success' });
       refreshBooking(booking.id);
     } else {
-      Taro.showToast({ title: result.error || '签到失败', icon: 'none' });
+      Taro.showToast({ title: result.error || '核销失败', icon: 'none' });
     }
   };
 
-  const toggleEquipment = (equipmentId: string) => {
-    setTakenEquipments((prev) => ({ ...prev, [equipmentId]: !prev[equipmentId] }));
-  };
-
-  const handleStartSession = async () => {
-    if (!booking) return;
-    if (booking.equipmentRentals && booking.equipmentRentals.length > 0) {
-      const allTaken = booking.equipmentRentals.every((e) => takenEquipments[e.equipmentId]);
-      if (!allTaken) {
-        Taro.showModal({
-          title: '装备未全部领取',
-          content: '还有装备未标记为已领取，是否仍确认开始使用？',
-          success: async (res) => {
-            if (res.confirm) {
-              doStartSession();
-            }
-          }
-        });
-        return;
-      }
-    }
-    doStartSession();
-  };
-
-  const doStartSession = async () => {
-    if (!booking) return;
-    const result = await startVenueSession(booking.id);
-    if (result.success) {
-      Taro.showToast({ title: '已开始攀岩，加油！', icon: 'success' });
-      refreshBooking(booking.id);
-    } else {
-      Taro.showToast({ title: result.error || '操作失败', icon: 'none' });
-    }
+  const reset = () => {
+    setCodeInput('');
+    setBooking(null);
+    setRelatedRentals([]);
+    setTeamName('');
   };
 
   const handleComplete = async () => {
@@ -147,14 +111,6 @@ const CheckinPage: React.FC = () => {
         }
       }
     });
-  };
-
-  const reset = () => {
-    setCodeInput('');
-    setBooking(null);
-    setRelatedRentals([]);
-    setTeamName('');
-    setTakenEquipments({});
   };
 
   const renderStatusTag = () => {
@@ -182,7 +138,7 @@ const CheckinPage: React.FC = () => {
             <Text className={styles.btnTextDark}>清空</Text>
           </View>
           <View className={classNames(styles.actionBtn, styles.btnPrimary)} onClick={handleCheckIn}>
-            <Text className={styles.btnTextWhite}>✓ 确认签到</Text>
+            <Text className={styles.btnTextWhite}>✓ 确认核销</Text>
           </View>
         </View>
       );
@@ -194,8 +150,8 @@ const CheckinPage: React.FC = () => {
           <View className={classNames(styles.actionBtn, styles.btnSecondary)} onClick={reset}>
             <Text className={styles.btnTextDark}>清空</Text>
           </View>
-          <View className={classNames(styles.actionBtn, styles.btnWarning)} onClick={handleStartSession}>
-            <Text className={styles.btnTextWarn}>🧗 开始使用</Text>
+          <View className={classNames(styles.actionBtn, styles.btnPrimary)} onClick={handleCheckIn}>
+            <Text className={styles.btnTextWhite}>✓ 确认核销</Text>
           </View>
         </View>
       );
@@ -298,14 +254,11 @@ const CheckinPage: React.FC = () => {
                   const rental = relatedRentals.find((r) => r.equipmentId === eq.equipmentId);
                   const isTaken =
                     booking.status === 'in_progress' ||
-                    booking.status === 'completed' ||
-                    takenEquipments[eq.equipmentId];
-                  const canToggle = booking.status === 'checkedIn';
+                    booking.status === 'completed';
                   return (
                     <View
                       key={eq.equipmentId}
                       className={styles.equipmentItem}
-                      onClick={() => canToggle && toggleEquipment(eq.equipmentId)}
                     >
                       <View className={styles.equipmentInfo}>
                         <Text className={styles.equipmentName}>
@@ -323,7 +276,7 @@ const CheckinPage: React.FC = () => {
                         )}
                       >
                         <Text className={styles.equipmentStatusText}>
-                          {isTaken ? '已领取' : canToggle ? '点击领取' : '待领取'}
+                          {isTaken ? '已领取' : '待领取'}
                         </Text>
                       </View>
                     </View>

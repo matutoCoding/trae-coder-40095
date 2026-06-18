@@ -19,7 +19,12 @@ export const mockBookings: Booking[] = [
     statusText: '已确认',
     createdAt: new Date(now.getTime() - 3600000).toISOString(),
     expiredAt: new Date(now.getTime() + 900000).toISOString(),
-    checkInCode: 'A3B7K9'
+    checkInCode: 'A3B7K9',
+    totalEquipmentFee: 50,
+    equipmentRentals: [
+      { equipmentId: 'equip_001', equipmentName: '专业攀岩鞋', quantity: 1, price: 30 },
+      { equipmentId: 'equip_002', equipmentName: '坐式安全带', quantity: 1, price: 20 }
+    ]
   },
   {
     id: 'booking_002',
@@ -53,7 +58,14 @@ export const mockBookings: Booking[] = [
     statusText: '已完成',
     createdAt: new Date(now.getTime() - 100000000).toISOString(),
     expiredAt: new Date(now.getTime() - 90000000).toISOString(),
-    checkInCode: 'D4N6Q8'
+    checkInCode: 'D4N6Q8',
+    checkedInAt: new Date(now.getTime() - 98000000).toISOString(),
+    startedAt: new Date(now.getTime() - 98000000).toISOString(),
+    completedAt: new Date(now.getTime() - 95000000).toISOString(),
+    totalEquipmentFee: 20,
+    equipmentRentals: [
+      { equipmentId: 'equip_005', equipmentName: '镁粉球 100g', quantity: 2, price: 10 }
+    ]
   },
   {
     id: 'booking_004',

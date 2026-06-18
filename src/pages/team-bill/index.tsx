@@ -116,10 +116,10 @@ const TeamBillPage: React.FC = () => {
   };
 
   const selectMember = () => {
-    const items = [{ id: 'all', userName: '全部成员' } as TeamMember, ...members];
+    const items = [{ userId: 'all', userName: '全部成员' } as { userId: string; userName: string }, ...members];
     Taro.showActionSheet({
       itemList: items.map((m) => m.userName),
-      success: (res) => setSelectedMemberId(items[res.tapIndex].id)
+      success: (res) => setSelectedMemberId(items[res.tapIndex].userId)
     });
   };
 
@@ -184,7 +184,7 @@ const TeamBillPage: React.FC = () => {
   const currentMonthLabel = MONTH_LIST.find((m) => m.key === selectedMonth)?.label || selectedMonth;
   const currentTypeLabel = TYPE_FILTERS.find((t) => t.key === selectedType)?.label || '全部类型';
   const currentMemberLabel =
-    selectedMemberId === 'all' ? '全部成员' : members.find((m) => m.userId === selectedMemberId)?.userName || '';
+    selectedMemberId === 'all' ? '全部成员' : members.find((m) => m.userId === selectedMemberId)?.userName || '全部成员';
 
   return (
     <View className={styles.page}>

@@ -345,19 +345,28 @@ export const useBookingStore = create<BookingState>((set, get) => ({
       return { success: false, error: '预约已过期，无法签到' };
     }
 
-    if (booking.status === 'checkedIn' || booking.status === 'in_progress' || booking.status === 'completed') {
-      return { success: false, error: '已签到，请勿重复操作' };
+    if (booking.status === 'in_progress' || booking.status === 'completed') {
+      return { success: false, error: '该预约已在进行中' };
     }
 
-    if (booking.status !== 'confirmed') {
+    if (booking.status !== 'confirmed' && booking.status !== 'checkedIn') {
       return { success: false, error: '该预约无法签到' };
     }
 
     const messageStore = useMessageStore.getState();
+    const now = new Date().toISOString();
 
     set((state) => ({
       bookings: state.bookings.map((b) =>
-        b.id === bookingId ? { ...b, status: 'checkedIn', statusText: '已签到', checkedInAt: new Date().toISOString() } : b
+        b.id === bookingId
+          ? {
+              ...b,
+              status: 'in_progress',
+              statusText: '进行中',
+              checkedInAt: booking.checkedInAt || now,
+              startedAt: now
+            }
+          : b
       )
     }));
 
@@ -365,13 +374,13 @@ export const useBookingStore = create<BookingState>((set, get) => ({
 
     messageStore.sendMessage({
       type: 'booking_checkedin',
-      content: `【${booking.routeName}】${booking.startTime} 签到成功，请在核销台领取装备开始攀岩。`,
+      content: `【${booking.routeName}】${booking.startTime} 已核销签到，装备已领取，祝攀岩愉快！`,
       bookingId,
       actionType: 'open_booking',
       actionData: { bookingId }
     });
 
-    console.log('[BookingStore] Checked in:', bookingId);
+    console.log('[BookingStore] Checked in and started:', bookingId);
     return { success: true };
   },
 
@@ -416,8 +425,10 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     for (const rental of relatedRentals) {
       if (rental.status === 'rented') {
         const result = await equipmentStore.returnEquipment(rental.id);
-        if (result.success && rental.totalCost) {
-          totalEquipmentFee += rental.totalCost;
+        if (result.success) {
+          const updatedRental = equipmentStore.getRentalsByBookingId(bookingId).find((r) => r.id === rental.id);
+          const cost = updatedRental?.totalCost || rental.price * rental.quantity;
+          totalEquipmentFee += cost;
         }
       }
     }
