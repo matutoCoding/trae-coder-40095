@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text } from '@tarojs/components';
-import Taro from '@tarojs/taro';
 import classNames from 'classnames';
 import styles from './index.module.scss';
 import type { Booking } from '@/types/booking';
 import { BOOKING_STATUS_MAP } from '@/types/booking';
 import { formatDate } from '@/utils/time';
+import { formatCountdown } from '@/utils/time';
 
 interface BookingCardProps {
   booking: Booking;
@@ -23,6 +23,18 @@ const BookingCard: React.FC<BookingCardProps> = ({
   onCheckIn
 }) => {
   const statusInfo = BOOKING_STATUS_MAP[booking.status];
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    if (booking.status !== 'confirmed') return;
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, [booking.status]);
+
+  const expireTime = new Date(booking.expiredAt).getTime();
+  const remainingSeconds = Math.max(0, Math.floor((expireTime - now) / 1000));
+  const isExpiring = booking.status === 'confirmed' && remainingSeconds <= 0;
+  const showCountdown = booking.status === 'confirmed' && remainingSeconds > 0;
 
   const handleCancel = (e) => {
     e.stopPropagation();
@@ -64,10 +76,37 @@ const BookingCard: React.FC<BookingCardProps> = ({
         </Text>
       </View>
 
+      {showCountdown && (
+        <View className={styles.countdownRow}>
+          <Text className={styles.countdownLabel}>距自动释放还有</Text>
+          <Text className={classNames(styles.countdownValue, { [styles.countdownUrgent]: remainingSeconds < 300 }>
+            {formatCountdown(remainingSeconds)}
+          </Text>
+        </View>
+      )}
+
+      {isExpiring && (
+        <View className={styles.expiringRow}>
+          <Text className={styles.expiringText}>⏰ 即将超时自动释放</Text>
+        </View>
+      )}
+
       {booking.checkInCode && booking.status === 'confirmed' && (
         <View className={styles.codeRow}>
-          <Text className={styles.codeLabel}>签到码</Text>
-          <Text className={styles.codeValue}>{booking.checkInCode}</Text>
+          <View className={styles.codeLabelRow}>
+            <Text className={styles.codeLabel}>签到码</Text>
+            <Text className={styles.codeValue}>{booking.checkInCode}</Text>
+          </View>
+          <Text className={styles.codeHint}>到店请出示此码签到</Text>
+        </View>
+      )}
+
+      {booking.checkedInAt && (
+        <View className={styles.checkedInRow}>
+          <Text className={styles.checkedInIcon}>✅</Text>
+          <Text className={styles.checkedInText}>
+            已签到 · {formatDate(booking.checkedInAt, 'HH:mm')}
+          </Text>
         </View>
       )}
 

@@ -16,7 +16,7 @@
   display: flex;
   align-items: center;
   gap: $spacing-sm;
-  margin-bottom: $spacing-lg;
+  margin-bottom: $spacing-md;
 }
 
 .teamName {
@@ -27,8 +27,51 @@
   flex: 1;
 }
 
+.teamSwitchBadge {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 6rpx 16rpx;
+  border-radius: $radius-round;
+}
+
+.teamSwitchText {
+  font-size: $font-size-xs;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+.teamDesc {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: $line-height-normal;
+  margin-bottom: $spacing-sm;
+}
+
+.teamMeta {
+  display: flex;
+  align-items: center;
+}
+
+.teamMetaItem {
+  display: flex;
+  align-items: center;
+}
+
+.teamMetaLabel {
+  font-size: $font-size-xs;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.teamMetaValue {
+  font-size: $font-size-xs;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: $font-weight-medium;
+}
+
 .switchIcon {
-  font-size: 32rpx;
+  font-size: 20rpx;
   color: rgba(255, 255, 255, 0.8);
 }
 
@@ -278,4 +321,75 @@
 .emptyText {
   font-size: $font-size-sm;
   color: $color-text-tertiary;
+}
+
+.progressLabels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8rpx;
+}
+
+.progressLabelUsed {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.progressLabelPercent {
+  font-size: $font-size-xs;
+  color: $color-quota;
+  font-weight: $font-weight-medium;
+}
+
+.statDivider {
+  width: 1rpx;
+  height: 48rpx;
+  background: $color-divider;
+}
+
+.memberUsageBar {
+  padding: 0 $spacing-sm $spacing-md;
+}
+
+.memberUsageProgress {
+  width: 100%;
+  height: 8rpx;
+  background: $color-bg-gray;
+  border-radius: $radius-round;
+  overflow: hidden;
+  margin-bottom: 8rpx;
+}
+
+.memberUsageFill {
+  height: 100%;
+  background: linear-gradient(90deg, $color-quota 0%, $color-quota-light 100%);
+  border-radius: $radius-round;
+  transition: width $transition-base;
+}
+
+.memberUsageText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.memberDivider {
+  height: 1rpx;
+  background: $color-divider;
+  margin: 0 $spacing-lg;
+}
+
+.recordBalance {
+  display: flex;
+  align-items: center;
+  margin-top: 6rpx;
+}
+
+.recordBalanceLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.recordBalanceValue {
+  font-size: $font-size-xs;
+  color: $color-quota;
+  font-weight: $font-weight-medium;
 }

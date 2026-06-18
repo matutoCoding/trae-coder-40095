@@ -14,6 +14,7 @@ export interface Team {
 
 export interface TeamMember {
   id: string;
+  teamId: string;
   userId: string;
   userName: string;
   avatarColor: string;

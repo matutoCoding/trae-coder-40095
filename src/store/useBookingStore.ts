@@ -4,6 +4,7 @@ import type { Booking, WaitlistItem } from '@/types/booking';
 import { mockBookings, mockWaitlistItems } from '@/data/bookings';
 import { useRouteStore } from './useRouteStore';
 import { useTeamStore } from './useTeamStore';
+import { useEquipmentStore } from './useEquipmentStore';
 import { addMinutes, isTimeExpired } from '@/utils/time';
 
 const AUTO_RELEASE_MINUTES = 15;
@@ -16,11 +17,14 @@ interface BookingState {
   currentUserName: string;
   autoReleaseTimers: Record<string, ReturnType<typeof setTimeout>>;
   waitlistTimers: Record<string, ReturnType<typeof setTimeout>>;
+  tickInterval: ReturnType<typeof setInterval> | null;
 
   setCurrentUser: (userId: string, userName: string) => void;
   getMyBookings: () => Booking[];
   getMyWaitlistItems: () => WaitlistItem[];
   getBookingById: (id: string) => Booking | undefined;
+  subscribe: (listener: () => void) => () => void;
+  forceUpdate: () => void;
 
   createBooking: (params: {
     routeId: string;
@@ -57,6 +61,7 @@ interface BookingState {
   stopAutoReleaseTimer: (bookingId: string) => void;
   startWaitlistTimer: (waitlistId: string) => void;
   stopWaitlistTimer: (waitlistId: string) => void;
+  startTick: () => void;
 }
 
 export const useBookingStore = create<BookingState>((set, get) => ({
@@ -66,6 +71,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
   currentUserName: '张三',
   autoReleaseTimers: {},
   waitlistTimers: {},
+  tickInterval: null,
 
   setCurrentUser: (userId, userName) => set({ currentUserId: userId, currentUserName: userName }),
 
@@ -85,6 +91,28 @@ export const useBookingStore = create<BookingState>((set, get) => ({
 
   getBookingById: (id) => get().bookings.find((b) => b.id === id),
 
+  subscribe: (listener) => {
+    let lastState = JSON.stringify({
+      bookings: get().bookings,
+      waitlistItems: get().waitlistItems
+    });
+    const interval = setInterval(() => {
+      const newState = JSON.stringify({
+        bookings: get().bookings,
+        waitlistItems: get().waitlistItems
+      });
+      if (newState !== lastState) {
+        lastState = newState;
+        listener();
+      }
+    }, 500);
+    return () => clearInterval(interval);
+  },
+
+  forceUpdate: () => {
+    set({ bookings: [...get().bookings] });
+  },
+
   createBooking: async (params) => {
     const { currentUserId, currentUserName } = get();
     const { routeId, routeName, teamId, date, timeSlotId, startTime, endTime, equipmentRentals } = params;
@@ -93,6 +121,15 @@ export const useBookingStore = create<BookingState>((set, get) => ({
 
     const routeStore = useRouteStore.getState();
     const teamStore = useTeamStore.getState();
+    const equipmentStore = useEquipmentStore.getState();
+
+    if (equipmentRentals && equipmentRentals.length > 0) {
+      for (const er of equipmentRentals) {
+        if (equipmentStore.getAvailableStock(er.equipmentId) < er.quantity) {
+          return { success: false, error: `${er.equipmentName} 库存不足` };
+        }
+      }
+    }
 
     if (!teamStore.checkSufficientQuota(teamId, 1)) {
       return { success: false, error: '团队额度不足' };
@@ -149,6 +186,39 @@ export const useBookingStore = create<BookingState>((set, get) => ({
       }))
     };
 
+    let bookingRollback = false;
+
+    if (equipmentRentals && equipmentRentals.length > 0) {
+      for (const er of equipmentRentals) {
+        const rentResult = await equipmentStore.rentEquipment({
+          equipmentId: er.equipmentId,
+          quantity: er.quantity,
+          bookingId: newBooking.id,
+          userId: currentUserId,
+          userName: currentUserName,
+          teamId
+        });
+        if (!rentResult.success) {
+          bookingRollback = true;
+          break;
+        }
+      }
+    }
+
+    if (bookingRollback) {
+      routeStore.updateTimeSlotBooking(routeId, date, timeSlotId, -1);
+      await teamStore.refundQuota(
+        teamId,
+        currentUserId,
+        currentUserName,
+        1,
+        `装备不足退还${routeName}`,
+        newBooking.id
+      );
+      await equipmentStore.cancelRentalsByBookingId(newBooking.id);
+      return { success: false, error: '装备租赁失败' };
+    }
+
     set((state) => ({
       bookings: [newBooking, ...state.bookings]
     }));
@@ -175,6 +245,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
 
     const routeStore = useRouteStore.getState();
     const teamStore = useTeamStore.getState();
+    const equipmentStore = useEquipmentStore.getState();
 
     routeStore.updateTimeSlotBooking(booking.routeId, booking.date, booking.timeSlotId, -1);
 
@@ -186,6 +257,8 @@ export const useBookingStore = create<BookingState>((set, get) => ({
       `取消预约${booking.routeName}`,
       booking.id
     );
+
+    await equipmentStore.cancelRentalsByBookingId(bookingId);
 
     set((state) => ({
       bookings: state.bookings.map((b) =>
@@ -209,13 +282,21 @@ export const useBookingStore = create<BookingState>((set, get) => ({
       return { success: false, error: '预约不存在' };
     }
 
+    if (booking.status === 'expired') {
+      return { success: false, error: '预约已过期，无法签到' };
+    }
+
+    if (booking.status === 'checkedIn') {
+      return { success: false, error: '已签到' };
+    }
+
     if (booking.status !== 'confirmed') {
       return { success: false, error: '该预约无法签到' };
     }
 
     set((state) => ({
       bookings: state.bookings.map((b) =>
-        b.id === bookingId ? { ...b, status: 'checkedIn', statusText: '已签到' } : b
+        b.id === bookingId ? { ...b, status: 'checkedIn', statusText: '已签到', checkedInAt: new Date().toISOString() } : b
       )
     }));
 
@@ -328,6 +409,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     }
 
     const teamStore = useTeamStore.getState();
+    const routeStore = useRouteStore.getState();
 
     if (!teamStore.checkSufficientQuota(item.teamId, 1)) {
       set((state) => ({
@@ -335,6 +417,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
           w.id === waitlistId ? { ...w, status: 'expired' } : w
         )
       }));
+      routeStore.decrementWaitlist(item.routeId, item.date, item.timeSlotId);
       get().processNextWaitlist(item.routeId, item.date, item.timeSlotId);
       return { success: false, error: '团队额度不足，名额自动让给下一位' };
     }
@@ -353,11 +436,23 @@ export const useBookingStore = create<BookingState>((set, get) => ({
           w.id === waitlistId ? { ...w, status: 'expired' } : w
         )
       }));
+      routeStore.decrementWaitlist(item.routeId, item.date, item.timeSlotId);
       get().processNextWaitlist(item.routeId, item.date, item.timeSlotId);
       return { success: false, error: deductResult.error || '额度扣减失败' };
     }
 
-    const routeStore = useRouteStore.getState();
+    const slotUpdated = routeStore.updateTimeSlotBooking(item.routeId, item.date, item.timeSlotId, 1);
+    if (!slotUpdated) {
+      await teamStore.refundQuota(
+        item.teamId,
+        item.userId,
+        item.userName,
+        1,
+        `候补失败退还${item.routeName}`,
+      );
+      return { success: false, error: '场次预约失败' };
+    }
+
     routeStore.decrementWaitlist(item.routeId, item.date, item.timeSlotId);
 
     const now = new Date().toISOString();
@@ -417,6 +512,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
 
         const routeStore = useRouteStore.getState();
         const teamStore = useTeamStore.getState();
+        const equipmentStore = useEquipmentStore.getState();
 
         routeStore.updateTimeSlotBooking(booking.routeId, booking.date, booking.timeSlotId, -1);
 
@@ -428,6 +524,8 @@ export const useBookingStore = create<BookingState>((set, get) => ({
           `超时未到退还${booking.routeName}`,
           booking.id
         );
+
+        equipmentStore.cancelRentalsByBookingId(booking.id);
 
         set((state) => ({
           bookings: state.bookings.map((b) =>
@@ -561,5 +659,16 @@ export const useBookingStore = create<BookingState>((set, get) => ({
       delete newTimers[waitlistId];
       set({ waitlistTimers: newTimers });
     }
+  },
+
+  startTick: () => {
+    if (get().tickInterval) return;
+
+    const interval = setInterval(() => {
+      get().autoReleaseExpiredBookings();
+      set((state) => ({ bookings: [...state.bookings], waitlistItems: [...state.waitlistItems] }));
+    }, 1000);
+
+    set({ tickInterval: interval });
   }
 }));

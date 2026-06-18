@@ -6,33 +6,41 @@ interface EquipmentState {
   equipments: Equipment[];
   rentalRecords: RentalRecord[];
   currentUserId: string;
+  currentUserName: string;
   selectedCategory: string;
 
   setSelectedCategory: (category: string) => void;
-  setCurrentUser: (userId: string) => void;
+  setCurrentUser: (userId: string, userName: string) => void;
   getEquipmentsByCategory: (category?: string) => Equipment[];
   getEquipmentById: (id: string) => Equipment | undefined;
   getMyRentals: () => RentalRecord[];
+  getRentalsByBookingId: (bookingId: string) => RentalRecord[];
   getAvailableStock: (equipmentId: string) => number;
 
   rentEquipment: (params: {
     equipmentId: string;
     quantity: number;
     bookingId?: string;
+    userId?: string;
+    userName?: string;
+    teamId?: string;
   }) => Promise<{ success: boolean; rental?: RentalRecord; error?: string }>;
 
   returnEquipment: (rentalId: string) => Promise<{ success: boolean; error?: string }>;
+
+  cancelRentalsByBookingId: (bookingId: string) => Promise<{ success: boolean; error?: string }>;
 }
 
 export const useEquipmentStore = create<EquipmentState>((set, get) => ({
   equipments: mockEquipments,
   rentalRecords: mockRentalRecords,
   currentUserId: 'user_001',
+  currentUserName: '张三',
   selectedCategory: 'all',
 
   setSelectedCategory: (category) => set({ selectedCategory: category }),
 
-  setCurrentUser: (userId) => set({ currentUserId: userId }),
+  setCurrentUser: (userId, userName) => set({ currentUserId: userId, currentUserName: userName }),
 
   getEquipmentsByCategory: (category) => {
     const { equipments } = get();
@@ -49,13 +57,17 @@ export const useEquipmentStore = create<EquipmentState>((set, get) => ({
       .sort((a, b) => new Date(b.rentTime).getTime() - new Date(a.rentTime).getTime());
   },
 
+  getRentalsByBookingId: (bookingId) => {
+    return get().rentalRecords.filter((r) => r.bookingId === bookingId);
+  },
+
   getAvailableStock: (equipmentId) => {
     const equipment = get().equipments.find((e) => e.id === equipmentId);
     return equipment?.availableStock || 0;
   },
 
-  rentEquipment: async ({ equipmentId, quantity, bookingId }) => {
-    const { equipments, currentUserId } = get();
+  rentEquipment: async ({ equipmentId, quantity, bookingId, userId, userName, teamId }) => {
+    const { equipments, currentUserId, currentUserName } = get();
     const equipment = equipments.find((e) => e.id === equipmentId);
 
     if (!equipment) {
@@ -70,12 +82,12 @@ export const useEquipmentStore = create<EquipmentState>((set, get) => ({
     const expectedReturn = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
     const newRental: RentalRecord = {
-      id: `rental_${Date.now()}`,
+      id: `rental_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
       equipmentId,
       equipmentName: equipment.name,
-      userId: currentUserId,
-      userName: '张三',
-      teamId: 'team_001',
+      userId: userId || currentUserId,
+      userName: userName || currentUserName,
+      teamId: teamId || 'team_001',
       bookingId,
       quantity,
       price: equipment.price,
@@ -95,7 +107,7 @@ export const useEquipmentStore = create<EquipmentState>((set, get) => ({
       rentalRecords: [newRental, ...state.rentalRecords]
     }));
 
-    console.log('[EquipmentStore] Rented equipment:', equipment.name, 'x', quantity);
+    console.log('[EquipmentStore] Rented equipment:', equipment.name, 'x', quantity, 'booking:', bookingId);
     return { success: true, rental: newRental };
   },
 
@@ -135,6 +147,53 @@ export const useEquipmentStore = create<EquipmentState>((set, get) => ({
     }));
 
     console.log('[EquipmentStore] Returned equipment:', rental.equipmentName, 'cost:', totalCost);
+    return { success: true };
+  },
+
+  cancelRentalsByBookingId: async (bookingId) => {
+    const { rentalRecords } = get();
+    const relatedRentals = rentalRecords.filter(
+      (r) => r.bookingId === bookingId && (r.status === 'rented')
+    );
+
+    if (relatedRentals.length === 0) {
+      return { success: true };
+    }
+
+    const now = new Date();
+    const equipmentsToRestore: Record<string, number> = {};
+
+    relatedRentals.forEach((rental) => {
+      equipmentsToRestore[rental.equipmentId] =
+        (equipmentsToRestore[rental.equipmentId] || 0) + rental.quantity;
+    });
+
+    set((state) => {
+      const updatedEquipments = state.equipments.map((e) => {
+        const restoreQty = equipmentsToRestore[e.id] || 0;
+        if (restoreQty > 0) {
+          return { ...e, availableStock: e.availableStock + restoreQty };
+        }
+        return e;
+      });
+
+      const updatedRecords = state.rentalRecords.map((r) => {
+        if (r.bookingId === bookingId && r.status === 'rented') {
+          return {
+            ...r,
+            status: 'returned' as const,
+            statusText: '已取消',
+            returnTime: now.toISOString(),
+            totalCost: 0
+          };
+        }
+        return r;
+      });
+
+      return { equipments: updatedEquipments, rentalRecords: updatedRecords };
+    });
+
+    console.log('[EquipmentStore] Cancelled rentals for booking:', bookingId, 'count:', relatedRentals.length);
     return { success: true };
   }
 }));

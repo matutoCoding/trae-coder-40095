@@ -80,12 +80,17 @@
 
 .codeRow {
   display: flex;
-  align-items: center;
-  gap: $spacing-sm;
+  flex-direction: column;
   padding: $spacing-md;
   background: $color-primary-bg;
   border-radius: $radius-md;
   margin-top: $spacing-sm;
+}
+
+.codeLabelRow {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-sm;
 }
 
 .codeLabel {
@@ -98,6 +103,71 @@
   font-weight: $font-weight-bold;
   color: $color-primary;
   letter-spacing: 4rpx;
+}
+
+.codeHint {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 8rpx;
+}
+
+.countdownRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background: rgba(22, 93, 255, 0.08);
+  border-radius: $radius-sm;
+  margin-top: $spacing-xs;
+}
+
+.countdownLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.countdownValue {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $color-info;
+  font-variant-numeric: tabular-nums;
+}
+
+.countdownUrgent {
+  color: $color-error;
+}
+
+.expiringRow {
+  padding: $spacing-sm $spacing-md;
+  background: rgba(245, 63, 63, 0.1);
+  border-radius: $radius-sm;
+  margin-top: $spacing-xs;
+}
+
+.expiringText {
+  font-size: $font-size-sm;
+  color: $color-error;
+  font-weight: $font-weight-medium;
+}
+
+.checkedInRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-sm $spacing-md;
+  background: rgba(0, 180, 42, 0.1);
+  border-radius: $radius-sm;
+  margin-top: $spacing-xs;
+}
+
+.checkedInIcon {
+  font-size: $font-size-md;
+}
+
+.checkedInText {
+  font-size: $font-size-sm;
+  color: $color-success;
+  font-weight: $font-weight-medium;
 }
 
 .equipmentRow {

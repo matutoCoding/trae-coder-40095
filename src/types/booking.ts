@@ -13,6 +13,7 @@ export interface Booking {
   statusText: string;
   createdAt: string;
   expiredAt: string;
+  checkedInAt?: string;
   checkInCode?: string;
   equipmentRentals?: EquipmentRental[];
   isFromWaitlist?: boolean;

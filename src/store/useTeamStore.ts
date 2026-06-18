@@ -40,7 +40,7 @@ export const useTeamStore = create<TeamState>((set, get) => ({
 
   getTeamById: (id) => get().teams.find((t) => t.id === id),
 
-  getMembers: (teamId) => get().members.filter((m) => m.status === 'active'),
+  getMembers: (teamId) => get().members.filter((m) => m.teamId === teamId && m.status === 'active'),
   getQuotaRecords: (teamId) => {
     return get()
       .quotaRecords.filter((r) => r.teamId === teamId)
@@ -86,11 +86,11 @@ export const useTeamStore = create<TeamState>((set, get) => ({
         t.id === teamId ? { ...t, usedQuota: newUsedQuota } : t
       );
 
-      const memberIndex = state.members.findIndex((m) => m.userId === userId);
+      const memberIndex = state.members.findIndex((m) => m.userId === userId && m.teamId === teamId);
       let updatedMembers = state.members;
       if (memberIndex !== -1) {
         updatedMembers = state.members.map((m) =>
-          m.userId === userId ? { ...m, usedQuota: m.usedQuota + amount } : m
+          m.userId === userId && m.teamId === teamId ? { ...m, usedQuota: m.usedQuota + amount } : m
         );
       }
 
@@ -148,11 +148,11 @@ export const useTeamStore = create<TeamState>((set, get) => ({
         t.id === teamId ? { ...t, usedQuota: newUsedQuota } : t
       );
 
-      const memberIndex = state.members.findIndex((m) => m.userId === userId);
+      const memberIndex = state.members.findIndex((m) => m.userId === userId && m.teamId === teamId);
       let updatedMembers = state.members;
       if (memberIndex !== -1) {
         updatedMembers = state.members.map((m) =>
-          m.userId === userId ? { ...m, usedQuota: Math.max(0, m.usedQuota - amount) } : m
+          m.userId === userId && m.teamId === teamId ? { ...m, usedQuota: Math.max(0, m.usedQuota - amount) } : m
         );
       }
 

@@ -1,16 +1,17 @@
 import React, { useEffect } from 'react';
 import { useDidShow, useDidHide } from '@tarojs/taro';
-// 全局样式
+import { useBookingStore } from './store/useBookingStore';
 import './app.scss';
 
 function App(props) {
-  // 可以使用所有的 React Hooks
-  useEffect(() => {});
+  useEffect(() => {
+    useBookingStore.getState().startTick();
+  }, []);
 
-  // 对应 onShow
-  useDidShow(() => {});
+  useDidShow(() => {
+    useBookingStore.getState().startTick();
+  });
 
-  // 对应 onHide
   useDidHide(() => {});
 
   return props.children;
