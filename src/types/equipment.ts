@@ -21,11 +21,15 @@ export interface RentalRecord {
   userName: string;
   teamId: string;
   bookingId?: string;
+  bookingRouteName?: string;
+  bookingDate?: string;
+  bookingTimeRange?: string;
   quantity: number;
   price: number;
   deposit: number;
-  status: 'rented' | 'returned' | 'overdue' | 'lost';
+  status: 'rented' | 'returned' | 'overdue' | 'lost' | 'cancelled';
   statusText: string;
+  returnSource?: 'checkin_return' | 'booking_cancel' | 'manual';
   rentTime: string;
   expectedReturnTime: string;
   returnTime?: string;

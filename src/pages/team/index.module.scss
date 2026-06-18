@@ -346,6 +346,49 @@
   background: $color-divider;
 }
 
+.billEntry {
+  margin: 0 $spacing-md $spacing-md;
+  padding: $spacing-lg;
+  background: $color-bg-white;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.billEntryLeft {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  flex: 1;
+}
+
+.billEntryIcon {
+  font-size: 56rpx;
+}
+
+.billEntryInfo {
+  flex: 1;
+}
+
+.billEntryTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 4rpx;
+}
+
+.billEntryDesc {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.billEntryArrow {
+  font-size: 48rpx;
+  color: $color-text-tertiary;
+}
+
 .memberUsageBar {
   padding: 0 $spacing-sm $spacing-md;
 }

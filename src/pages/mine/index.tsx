@@ -5,20 +5,23 @@ import styles from './index.module.scss';
 import { useBookingStore } from '@/store/useBookingStore';
 import { useTeamStore } from '@/store/useTeamStore';
 import { useEquipmentStore } from '@/store/useEquipmentStore';
+import { useMessageStore } from '@/store/useMessageStore';
 
 const MinePage: React.FC = () => {
   const { getMyBookings, getMyWaitlistItems } = useBookingStore();
   const { getCurrentTeam, getRemainingQuota, members } = useTeamStore();
   const { getMyRentals } = useEquipmentStore();
+  const { getUnreadCount } = useMessageStore();
 
   const myBookings = getMyBookings();
   const myWaitlist = getMyWaitlistItems();
   const myRentals = getMyRentals();
+  const unreadCount = getUnreadCount();
   const currentTeam = getCurrentTeam();
   const remainingQuota = currentTeam ? getRemainingQuota(currentTeam.id) : 0;
 
   const confirmedBookings = myBookings.filter(
-    (b) => b.status === 'confirmed' || b.status === 'checkedIn'
+    (b) => b.status === 'confirmed' || b.status === 'checkedIn' || b.status === 'in_progress'
   ).length;
   const activeRentals = myRentals.filter((r) => r.status === 'rented').length;
 
@@ -32,10 +35,17 @@ const MinePage: React.FC = () => {
       ]
     },
     {
+      title: '到店服务',
+      items: [
+        { icon: '🔔', text: '消息中心', badge: unreadCount, action: () => Taro.navigateTo({ url: '/pages/messages/index' }) },
+        { icon: '🎫', text: '门店核销台', action: () => Taro.navigateTo({ url: '/pages/checkin/index' }) }
+      ]
+    },
+    {
       title: '团队管理',
       items: [
         { icon: '👥', text: '团队额度', action: () => Taro.switchTab({ url: '/pages/team/index' }) },
-        { icon: '📋', text: '额度明细', action: () => Taro.switchTab({ url: '/pages/team/index' }) },
+        { icon: '�', text: '月度账单', action: () => Taro.navigateTo({ url: '/pages/team-bill/index' }) },
         { icon: '👤', text: '成员管理', action: () => Taro.showToast({ title: '功能开发中', icon: 'none' }) }
       ]
     },

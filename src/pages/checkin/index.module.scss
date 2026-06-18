@@ -1,0 +1,344 @@
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 120rpx;
+}
+
+.inputCard {
+  padding: $spacing-lg;
+  margin: $spacing-md;
+  background: $color-bg-white;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+}
+
+.inputTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.inputRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+}
+
+.codeInput {
+  flex: 1;
+  height: 80rpx;
+  background: $color-bg-gray;
+  border-radius: $radius-md;
+  padding: 0 $spacing-md;
+  font-size: 36rpx;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  letter-spacing: 8rpx;
+  text-align: center;
+  border: 2rpx solid $color-divider;
+}
+
+.codeInputFocused {
+  border-color: $color-primary;
+  background: rgba(255, 107, 53, 0.05);
+}
+
+.scanBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  width: 140rpx;
+  height: 80rpx;
+  background: $color-primary;
+  border-radius: $radius-md;
+}
+
+.scanBtnText {
+  font-size: $font-size-sm;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+.searchBtn {
+  width: 100%;
+  height: 88rpx;
+  background: linear-gradient(135deg, $color-primary 0%, darken($color-primary, 8%) 100%);
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.searchBtnText {
+  font-size: $font-size-md;
+  color: $color-text-white;
+  font-weight: $font-weight-semibold;
+}
+
+.resultCard {
+  padding: $spacing-lg;
+  margin: $spacing-md;
+  background: $color-bg-white;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+}
+
+.resultHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-lg;
+  padding-bottom: $spacing-md;
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.resultTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.statusTag {
+  padding: 6rpx 16rpx;
+  border-radius: $radius-round;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+}
+
+.statusConfirmed {
+  color: $color-info;
+  background: rgba(22, 93, 255, 0.1);
+}
+
+.statusCheckedIn {
+  color: $color-warning;
+  background: rgba(114, 46, 209, 0.1);
+}
+
+.statusInProgress {
+  color: $color-success;
+  background: rgba(0, 180, 42, 0.1);
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 0;
+}
+
+.infoLabel {
+  width: 140rpx;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  flex-shrink: 0;
+}
+
+.infoValue {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+  flex: 1;
+}
+
+.infoValueHighlight {
+  font-size: $font-size-lg;
+  color: $color-primary;
+  font-weight: $font-weight-bold;
+}
+
+.bookingCodeBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 120rpx;
+  background: linear-gradient(135deg, $color-primary-bg 0%, rgba(255, 107, 53, 0.2) 100%);
+  border-radius: $radius-md;
+  margin: $spacing-md 0;
+}
+
+.bookingCodeText {
+  font-size: 64rpx;
+  font-weight: $font-weight-bold;
+  color: $color-primary;
+  letter-spacing: 16rpx;
+}
+
+.sectionTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin: $spacing-lg 0 $spacing-md;
+  padding-left: $spacing-sm;
+  border-left: 6rpx solid $color-primary;
+}
+
+.equipmentList {
+  background: $color-bg-gray;
+  border-radius: $radius-md;
+  overflow: hidden;
+}
+
+.equipmentItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md;
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.equipmentItem:last-child {
+  border-bottom: none;
+}
+
+.equipmentInfo {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  flex: 1;
+}
+
+.equipmentName {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.equipmentQty {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+.equipmentStatus {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  padding: 4rpx 12rpx;
+  border-radius: $radius-round;
+}
+
+.statusPending {
+  color: $color-warning;
+  background: rgba(255, 125, 0, 0.1);
+}
+
+.statusTaken {
+  color: $color-success;
+  background: rgba(0, 180, 42, 0.1);
+}
+
+.actionBtns {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: $spacing-md calc(env(safe-area-inset-bottom) + 20rpx);
+  background: $color-bg-white;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.08);
+  display: flex;
+  gap: $spacing-sm;
+  z-index: 100;
+}
+
+.actionBtn {
+  flex: 1;
+  height: 88rpx;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btnPrimary {
+  background: linear-gradient(135deg, $color-success 0%, darken($color-success, 8%) 100%);
+}
+
+.btnSecondary {
+  background: $color-bg-gray;
+  border: 2rpx solid $color-divider;
+}
+
+.btnWarning {
+  background: linear-gradient(135deg, $color-warning 0%, darken($color-warning, 8%) 100%);
+}
+
+.btnTextWhite {
+  font-size: $font-size-md;
+  color: $color-text-white;
+  font-weight: $font-weight-semibold;
+}
+
+.btnTextDark {
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  font-weight: $font-weight-semibold;
+}
+
+.btnTextWarn {
+  font-size: $font-size-md;
+  color: $color-text-white;
+  font-weight: $font-weight-semibold;
+}
+
+.emptyState {
+  padding: 120rpx $spacing-xl;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.emptyIcon {
+  font-size: 120rpx;
+  opacity: 0.4;
+  margin-bottom: $spacing-md;
+}
+
+.emptyText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.summaryRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md;
+  background: rgba(0, 180, 42, 0.06);
+  border-radius: $radius-md;
+  margin-top: $spacing-md;
+}
+
+.summaryLabel {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.summaryValue {
+  font-size: $font-size-lg;
+  color: $color-success;
+  font-weight: $font-weight-bold;
+}
+
+.tipsBox {
+  background: rgba(22, 93, 255, 0.06);
+  padding: $spacing-md;
+  border-radius: $radius-md;
+  margin-top: $spacing-lg;
+}
+
+.tipsTitle {
+  font-size: $font-size-sm;
+  color: $color-info;
+  font-weight: $font-weight-semibold;
+  margin-bottom: 8rpx;
+}
+
+.tipsText {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  line-height: 1.6;
+}

@@ -1,10 +1,11 @@
 import { create } from 'zustand';
 import Taro from '@tarojs/taro';
-import type { Booking, WaitlistItem } from '@/types/booking';
+import type { Booking, WaitlistItem, EquipmentRental } from '@/types/booking';
 import { mockBookings, mockWaitlistItems } from '@/data/bookings';
 import { useRouteStore } from './useRouteStore';
 import { useTeamStore } from './useTeamStore';
 import { useEquipmentStore } from './useEquipmentStore';
+import { useMessageStore } from './useMessageStore';
 import { addMinutes, isTimeExpired } from '@/utils/time';
 
 const AUTO_RELEASE_MINUTES = 15;
@@ -23,6 +24,7 @@ interface BookingState {
   getMyBookings: () => Booking[];
   getMyWaitlistItems: () => WaitlistItem[];
   getBookingById: (id: string) => Booking | undefined;
+  getBookingByCode: (code: string) => Booking | undefined;
   subscribe: (listener: () => void) => () => void;
   forceUpdate: () => void;
 
@@ -40,6 +42,10 @@ interface BookingState {
   cancelBooking: (bookingId: string) => Promise<{ success: boolean; error?: string }>;
 
   checkInBooking: (bookingId: string) => Promise<{ success: boolean; error?: string }>;
+
+  startVenueSession: (bookingId: string) => Promise<{ success: boolean; error?: string }>;
+
+  completeVenueSession: (bookingId: string) => Promise<{ success: boolean; error?: string; totalEquipmentFee?: number }>;
 
   joinWaitlist: (params: {
     routeId: string;
@@ -85,11 +91,19 @@ export const useBookingStore = create<BookingState>((set, get) => ({
   getMyWaitlistItems: () => {
     const { waitlistItems, currentUserId } = get();
     return waitlistItems
-      .filter((w) => w.userId === currentUserId && w.status === 'waiting')
+      .filter((w) => w.userId === currentUserId && (w.status === 'waiting' || w.status === 'notified'))
       .sort((a, b) => a.position - b.position);
   },
 
   getBookingById: (id) => get().bookings.find((b) => b.id === id),
+
+  getBookingByCode: (code) => {
+    const upperCode = code.toUpperCase().trim();
+    return get().bookings.find(
+      (b) => b.checkInCode?.toUpperCase() === upperCode &&
+        (b.status === 'confirmed' || b.status === 'checkedIn' || b.status === 'in_progress')
+    );
+  },
 
   subscribe: (listener) => {
     let lastState = JSON.stringify({
@@ -122,6 +136,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     const routeStore = useRouteStore.getState();
     const teamStore = useTeamStore.getState();
     const equipmentStore = useEquipmentStore.getState();
+    const messageStore = useMessageStore.getState();
 
     if (equipmentRentals && equipmentRentals.length > 0) {
       for (const er of equipmentRentals) {
@@ -161,6 +176,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
 
     const now = new Date().toISOString();
     const expiredAt = addMinutes(now, AUTO_RELEASE_MINUTES);
+    const totalEquipmentFee = equipmentRentals?.reduce((sum, e) => sum + e.price * e.quantity, 0);
 
     const newBooking: Booking = {
       id: `booking_${Date.now()}`,
@@ -174,10 +190,11 @@ export const useBookingStore = create<BookingState>((set, get) => ({
       startTime,
       endTime,
       status: 'confirmed',
-      statusText: '已确认',
+      statusText: '待签到',
       createdAt: now,
       expiredAt,
       checkInCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
+      totalEquipmentFee,
       equipmentRentals: equipmentRentals?.map((e) => ({
         equipmentId: e.equipmentId,
         equipmentName: e.equipmentName,
@@ -194,6 +211,9 @@ export const useBookingStore = create<BookingState>((set, get) => ({
           equipmentId: er.equipmentId,
           quantity: er.quantity,
           bookingId: newBooking.id,
+          bookingRouteName: routeName,
+          bookingDate: date,
+          bookingTimeRange: `${startTime}-${endTime}`,
           userId: currentUserId,
           userName: currentUserName,
           teamId
@@ -225,6 +245,26 @@ export const useBookingStore = create<BookingState>((set, get) => ({
 
     get().startAutoReleaseTimer(newBooking.id);
 
+    messageStore.sendMessage({
+      type: 'booking_created',
+      content: `您已成功预约【${routeName}】${startTime}-${endTime}，凭签到码 ${newBooking.checkInCode} 到店签到。`,
+      bookingId: newBooking.id,
+      routeId,
+      date,
+      timeSlotId,
+      actionType: 'open_booking',
+      actionData: { bookingId: newBooking.id }
+    });
+
+    if (deductResult.newBalance !== undefined) {
+      messageStore.sendMessage({
+        type: 'quota_deduct',
+        content: `团队扣减 1 次额度，预约【${routeName}】${startTime}，剩余额度 ${deductResult.newBalance} 次。`,
+        teamId,
+        actionType: 'open_team'
+      });
+    }
+
     console.log('[BookingStore] Booking created:', newBooking.id);
     return { success: true, booking: newBooking };
   },
@@ -237,7 +277,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
       return { success: false, error: '预约不存在' };
     }
 
-    if (booking.status === 'cancelled' || booking.status === 'completed' || booking.status === 'expired') {
+    if (booking.status === 'cancelled' || booking.status === 'completed' || booking.status === 'expired' || booking.status === 'in_progress') {
       return { success: false, error: '该预约无法取消' };
     }
 
@@ -246,10 +286,11 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     const routeStore = useRouteStore.getState();
     const teamStore = useTeamStore.getState();
     const equipmentStore = useEquipmentStore.getState();
+    const messageStore = useMessageStore.getState();
 
     routeStore.updateTimeSlotBooking(booking.routeId, booking.date, booking.timeSlotId, -1);
 
-    await teamStore.refundQuota(
+    const refundResult = await teamStore.refundQuota(
       booking.teamId,
       booking.userId,
       booking.userName,
@@ -267,6 +308,24 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     }));
 
     get().stopAutoReleaseTimer(bookingId);
+
+    messageStore.sendMessage({
+      type: 'booking_cancelled',
+      content: `您预约的【${booking.routeName}】${booking.date} ${booking.startTime} 已取消。`,
+      bookingId,
+      teamId: booking.teamId,
+      actionType: 'open_booking',
+      actionData: { bookingId }
+    });
+
+    if (refundResult.success && refundResult.newBalance !== undefined) {
+      messageStore.sendMessage({
+        type: 'quota_refund',
+        content: `取消预约退还 1 次额度，团队剩余额度 ${refundResult.newBalance} 次。`,
+        teamId: booking.teamId,
+        actionType: 'open_team'
+      });
+    }
 
     get().processNextWaitlist(booking.routeId, booking.date, booking.timeSlotId);
 
@@ -286,13 +345,15 @@ export const useBookingStore = create<BookingState>((set, get) => ({
       return { success: false, error: '预约已过期，无法签到' };
     }
 
-    if (booking.status === 'checkedIn') {
-      return { success: false, error: '已签到' };
+    if (booking.status === 'checkedIn' || booking.status === 'in_progress' || booking.status === 'completed') {
+      return { success: false, error: '已签到，请勿重复操作' };
     }
 
     if (booking.status !== 'confirmed') {
       return { success: false, error: '该预约无法签到' };
     }
+
+    const messageStore = useMessageStore.getState();
 
     set((state) => ({
       bookings: state.bookings.map((b) =>
@@ -302,8 +363,75 @@ export const useBookingStore = create<BookingState>((set, get) => ({
 
     get().stopAutoReleaseTimer(bookingId);
 
+    messageStore.sendMessage({
+      type: 'booking_checkedin',
+      content: `【${booking.routeName}】${booking.startTime} 签到成功，请在核销台领取装备开始攀岩。`,
+      bookingId,
+      actionType: 'open_booking',
+      actionData: { bookingId }
+    });
+
     console.log('[BookingStore] Checked in:', bookingId);
     return { success: true };
+  },
+
+  startVenueSession: async (bookingId) => {
+    const { bookings } = get();
+    const booking = bookings.find((b) => b.id === bookingId);
+
+    if (!booking) {
+      return { success: false, error: '预约不存在' };
+    }
+
+    if (booking.status !== 'checkedIn') {
+      return { success: false, error: '请先完成签到' };
+    }
+
+    set((state) => ({
+      bookings: state.bookings.map((b) =>
+        b.id === bookingId ? { ...b, status: 'in_progress', statusText: '进行中', startedAt: new Date().toISOString() } : b
+      )
+    }));
+
+    console.log('[BookingStore] Session started:', bookingId);
+    return { success: true };
+  },
+
+  completeVenueSession: async (bookingId) => {
+    const { bookings } = get();
+    const booking = bookings.find((b) => b.id === bookingId);
+
+    if (!booking) {
+      return { success: false, error: '预约不存在' };
+    }
+
+    if (booking.status !== 'checkedIn' && booking.status !== 'in_progress') {
+      return { success: false, error: '当前状态无法完成会话' };
+    }
+
+    const equipmentStore = useEquipmentStore.getState();
+    const relatedRentals = equipmentStore.getRentalsByBookingId(bookingId);
+
+    let totalEquipmentFee = 0;
+    for (const rental of relatedRentals) {
+      if (rental.status === 'rented') {
+        const result = await equipmentStore.returnEquipment(rental.id);
+        if (result.success && rental.totalCost) {
+          totalEquipmentFee += rental.totalCost;
+        }
+      }
+    }
+
+    set((state) => ({
+      bookings: state.bookings.map((b) =>
+        b.id === bookingId
+          ? { ...b, status: 'completed', statusText: '已完成', completedAt: new Date().toISOString(), totalEquipmentFee }
+          : b
+      )
+    }));
+
+    console.log('[BookingStore] Session completed:', bookingId, 'equipment fee:', totalEquipmentFee);
+    return { success: true, totalEquipmentFee };
   },
 
   joinWaitlist: async (params) => {
@@ -410,6 +538,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
 
     const teamStore = useTeamStore.getState();
     const routeStore = useRouteStore.getState();
+    const messageStore = useMessageStore.getState();
 
     if (!teamStore.checkSufficientQuota(item.teamId, 1)) {
       set((state) => ({
@@ -418,6 +547,17 @@ export const useBookingStore = create<BookingState>((set, get) => ({
         )
       }));
       routeStore.decrementWaitlist(item.routeId, item.date, item.timeSlotId);
+
+      messageStore.sendMessage({
+        type: 'waitlist_skipped',
+        content: `候补【${item.routeName}】${item.startTime} 额度不足，名额自动让给下一位。`,
+        userId: item.userId,
+        teamId: item.teamId,
+        waitlistId,
+        routeId: item.routeId,
+        actionType: 'open_waitlist'
+      });
+
       get().processNextWaitlist(item.routeId, item.date, item.timeSlotId);
       return { success: false, error: '团队额度不足，名额自动让给下一位' };
     }
@@ -437,6 +577,14 @@ export const useBookingStore = create<BookingState>((set, get) => ({
         )
       }));
       routeStore.decrementWaitlist(item.routeId, item.date, item.timeSlotId);
+
+      messageStore.sendMessage({
+        type: 'waitlist_skipped',
+        content: `候补【${item.routeName}】${item.startTime} 失败：${deductResult.error}，名额让给下一位。`,
+        userId: item.userId,
+        waitlistId
+      });
+
       get().processNextWaitlist(item.routeId, item.date, item.timeSlotId);
       return { success: false, error: deductResult.error || '额度扣减失败' };
     }
@@ -470,7 +618,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
       startTime: item.startTime,
       endTime: item.endTime,
       status: 'confirmed',
-      statusText: '已确认',
+      statusText: '待签到',
       createdAt: now,
       expiredAt,
       checkInCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
@@ -494,6 +642,27 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     get().startAutoReleaseTimer(newBooking.id);
     get().stopWaitlistTimer(waitlistId);
 
+    messageStore.sendMessage({
+      type: 'waitlist_success',
+      content: `候补补位成功！【${item.routeName}】${item.startTime} 预约已确认，签到码 ${newBooking.checkInCode}。`,
+      userId: item.userId,
+      teamId: item.teamId,
+      bookingId: newBooking.id,
+      routeId: item.routeId,
+      actionType: 'open_booking',
+      actionData: { bookingId: newBooking.id }
+    });
+
+    if (deductResult.newBalance !== undefined) {
+      messageStore.sendMessage({
+        type: 'quota_deduct',
+        content: `候补扣减 1 次额度，剩余 ${deductResult.newBalance} 次。`,
+        userId: item.userId,
+        teamId: item.teamId,
+        actionType: 'open_team'
+      });
+    }
+
     console.log('[BookingStore] Waitlist confirmed, booking created:', newBooking.id);
     return { success: true, booking: newBooking };
   },
@@ -505,18 +674,18 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     bookings.forEach((booking) => {
       if (
         booking.status === 'confirmed' &&
-        isTimeExpired(booking.expiredAt) &&
-        booking.status !== 'checkedIn'
+        isTimeExpired(booking.expiredAt)
       ) {
         console.log('[BookingStore] Auto releasing expired booking:', booking.id);
 
         const routeStore = useRouteStore.getState();
         const teamStore = useTeamStore.getState();
         const equipmentStore = useEquipmentStore.getState();
+        const messageStore = useMessageStore.getState();
 
         routeStore.updateTimeSlotBooking(booking.routeId, booking.date, booking.timeSlotId, -1);
 
-        teamStore.refundQuota(
+        const refundResult = teamStore.refundQuota(
           booking.teamId,
           booking.userId,
           booking.userName,
@@ -531,7 +700,27 @@ export const useBookingStore = create<BookingState>((set, get) => ({
           bookings: state.bookings.map((b) =>
             b.id === booking.id ? { ...b, status: 'expired', statusText: '已过期' } : b
           )
-        }));
+    }));
+
+        messageStore.sendMessage({
+          type: 'booking_expired',
+          content: `【${booking.routeName}】${booking.startTime} 超时未到，预约已自动取消，额度已退还。`,
+          bookingId: booking.id,
+          userId: booking.userId,
+          teamId: booking.teamId,
+          actionType: 'open_booking',
+          actionData: { bookingId: booking.id }
+        });
+
+        if (refundResult.success && refundResult.newBalance !== undefined) {
+          messageStore.sendMessage({
+            type: 'quota_refund',
+            content: `超时释放退还 1 次额度，团队剩余 ${refundResult.newBalance} 次。`,
+            userId: booking.userId,
+            teamId: booking.teamId,
+            actionType: 'open_team'
+          });
+        }
 
         get().processNextWaitlist(booking.routeId, booking.date, booking.timeSlotId);
       }
@@ -540,6 +729,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
 
   processNextWaitlist: (routeId, date, timeSlotId) => {
     const { waitlistItems } = get();
+    const messageStore = useMessageStore.getState();
 
     const nextInLine = waitlistItems
       .filter(
@@ -565,6 +755,17 @@ export const useBookingStore = create<BookingState>((set, get) => ({
         w.id === nextInLine.id ? { ...w, status: 'notified', notifiedAt } : w
       )
     }));
+
+    messageStore.sendMessage({
+      type: 'waitlist_notify',
+      content: `候补补位通知！【${nextInLine.routeName}】${nextInLine.startTime} 有名额空出，请在10分钟内确认！当前排位 #${nextInLine.position}`,
+      waitlistId: nextInLine.id,
+      userId: nextInLine.userId,
+      teamId: nextInLine.teamId,
+      routeId: nextInLine.routeId,
+      actionType: 'open_waitlist',
+      actionData: { waitlistId: nextInLine.id }
+    });
 
     get().startWaitlistTimer(nextInLine.id);
 
@@ -622,11 +823,21 @@ export const useBookingStore = create<BookingState>((set, get) => ({
 
     const timer = setTimeout(() => {
       console.log('[BookingStore] Waitlist timer expired for:', waitlistId);
-      
+
+      const messageStore = useMessageStore.getState();
       const currentItem = get().waitlistItems.find((w) => w.id === waitlistId);
       if (currentItem && currentItem.status === 'notified') {
         const routeStore = useRouteStore.getState();
         routeStore.decrementWaitlist(currentItem.routeId, currentItem.date, currentItem.timeSlotId);
+
+        messageStore.sendMessage({
+          type: 'waitlist_expired',
+          content: `候补【${currentItem.routeName}】${currentItem.startTime} 未在10分钟内确认，名额已让给下一位。`,
+          userId: currentItem.userId,
+          teamId: currentItem.teamId,
+          waitlistId,
+          routeId: currentItem.routeId
+        });
 
         set((state) => ({
           waitlistItems: state.waitlistItems

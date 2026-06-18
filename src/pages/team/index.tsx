@@ -153,6 +153,17 @@ const TeamPage: React.FC = () => {
         </View>
       </View>
 
+      <View className={styles.billEntry} onClick={() => Taro.navigateTo({ url: '/pages/team-bill/index' })}>
+        <View className={styles.billEntryLeft}>
+          <Text className={styles.billEntryIcon}>📊</Text>
+          <View className={styles.billEntryInfo}>
+            <Text className={styles.billEntryTitle}>月度账单</Text>
+            <Text className={styles.billEntryDesc}>按月份/成员/类型筛选查账，追踪每一笔额度去向</Text>
+          </View>
+        </View>
+        <Text className={styles.billEntryArrow}>›</Text>
+      </View>
+
       <ScrollView scrollY enhanced showScrollbar={false}>
         <View className={styles.membersSection}>
           <View className={styles.sectionHeader}>

@@ -9,14 +9,17 @@ export interface Booking {
   timeSlotId: string;
   startTime: string;
   endTime: string;
-  status: 'pending' | 'confirmed' | 'checkedIn' | 'completed' | 'cancelled' | 'expired';
+  status: 'pending' | 'confirmed' | 'checkedIn' | 'in_progress' | 'completed' | 'cancelled' | 'expired';
   statusText: string;
   createdAt: string;
   expiredAt: string;
   checkedInAt?: string;
+  startedAt?: string;
+  completedAt?: string;
   checkInCode?: string;
   equipmentRentals?: EquipmentRental[];
   isFromWaitlist?: boolean;
+  totalEquipmentFee?: number;
 }
 
 export interface WaitlistItem {
@@ -46,11 +49,12 @@ export interface EquipmentRental {
 export type BookingStatus = 'pending' | 'confirmed' | 'checkedIn' | 'completed' | 'cancelled' | 'expired';
 export type WaitlistStatus = 'waiting' | 'notified' | 'confirmed' | 'cancelled' | 'expired';
 
-export const BOOKING_STATUS_MAP: Record<BookingStatus, { text: string; color: string }> = {
+export const BOOKING_STATUS_MAP: Record<Booking['status'], { text: string; color: string }> = {
   pending: { text: '待确认', color: '#FF7D00' },
-  confirmed: { text: '已确认', color: '#165DFF' },
-  checkedIn: { text: '已签到', color: '#00B42A' },
-  completed: { text: '已完成', color: '#4E5969' },
+  confirmed: { text: '待签到', color: '#165DFF' },
+  checkedIn: { text: '已签到', color: '#722ED1' },
+  in_progress: { text: '进行中', color: '#00B42A' },
+  completed: { text: '已完成', color: '#2EC4B6' },
   cancelled: { text: '已取消', color: '#86909C' },
   expired: { text: '已过期', color: '#F53F3F' }
 };

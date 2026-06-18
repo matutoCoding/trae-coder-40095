@@ -123,6 +123,90 @@
   color: $color-error;
 }
 
+.cancelled {
+  background: rgba(134, 144, 156, 0.1);
+  color: $color-text-secondary;
+}
+
+.sourceTag {
+  padding: 4rpx 12rpx;
+  border-radius: $radius-round;
+  margin-right: 8rpx;
+}
+
+.sourceText {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+}
+
+.sourceCancel {
+  background: rgba(134, 144, 156, 0.1);
+  color: $color-text-secondary;
+}
+
+.sourceCheckin {
+  background: rgba(0, 180, 42, 0.1);
+  color: $color-success;
+}
+
+.bookingRelation {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-sm $spacing-md;
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.06) 0%, rgba(22, 93, 255, 0.06) 100%);
+  border-radius: $radius-sm;
+  margin-bottom: $spacing-sm;
+}
+
+.bookingIcon {
+  font-size: $font-size-md;
+}
+
+.bookingInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.bookingRoute {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+  @include text-ellipsis;
+}
+
+.bookingTime {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  margin-top: 2rpx;
+}
+
+.noRelation {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  padding: $spacing-xs 0;
+}
+
+.costRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8rpx;
+  padding-top: 8rpx;
+  border-top: 1rpx dashed $color-divider;
+}
+
+.costLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.costValue {
+  font-size: $font-size-sm;
+  color: $color-primary;
+  font-weight: $font-weight-bold;
+}
+
 .rentalInfo {
   display: flex;
   flex-wrap: wrap;

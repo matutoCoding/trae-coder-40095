@@ -1,0 +1,462 @@
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+  padding-bottom: 40rpx;
+}
+
+.header {
+  background: linear-gradient(135deg, $color-quota 0%, $color-quota-dark 100%);
+  padding: 40rpx $spacing-lg calc(env(safe-area-inset-top) + 40rpx);
+  color: $color-text-white;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  margin-bottom: $spacing-md;
+  opacity: 0.9;
+}
+
+.breadcrumbText {
+  font-size: $font-size-xs;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.breadcrumbArrow {
+  font-size: $font-size-xs;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 8rpx;
+}
+
+.teamSelector {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: $spacing-lg;
+}
+
+.teamName {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+  @include text-ellipsis;
+  flex: 1;
+}
+
+.switchBadge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 6rpx 16rpx;
+  border-radius: $radius-round;
+}
+
+.switchBadgeText {
+  font-size: $font-size-xs;
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+.statsCard {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+}
+
+.statsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.monthText {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+}
+
+.remainingLabel {
+  font-size: $font-size-xs;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.remainingValue {
+  font-size: 56rpx;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+  line-height: 1.1;
+  margin-bottom: 6rpx;
+}
+
+.remainingUnit {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.statsRow {
+  display: flex;
+  margin-top: $spacing-md;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: $radius-md;
+  overflow: hidden;
+}
+
+.statItem {
+  flex: 1;
+  padding: $spacing-md;
+  text-align: center;
+}
+
+.statItem:not(:last-child) {
+  border-right: 1rpx solid rgba(255, 255, 255, 0.15);
+}
+
+.statNumber {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+  margin-bottom: 6rpx;
+}
+
+.statLabel {
+  font-size: $font-size-xs;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.filtersBar {
+  position: sticky;
+  top: 0;
+  background: $color-bg-white;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: 1rpx solid $color-divider;
+  z-index: 20;
+  display: flex;
+  gap: $spacing-sm;
+  flex-wrap: wrap;
+}
+
+.filterItem {
+  padding: 10rpx 20rpx;
+  background: $color-bg-gray;
+  border-radius: $radius-round;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.filterItemActive {
+  background: rgba(255, 107, 53, 0.12);
+}
+
+.filterText {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+}
+
+.filterTextActive {
+  color: $color-primary;
+  font-weight: $font-weight-semibold;
+}
+
+.filterArrow {
+  font-size: 20rpx;
+  color: inherit;
+}
+
+.section {
+  margin: $spacing-md;
+  background: $color-bg-white;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.sectionTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.sectionCount {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.memberSummaryItem {
+  display: flex;
+  align-items: center;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: 1rpx solid $color-divider;
+}
+
+.memberSummaryItem:last-child {
+  border-bottom: none;
+}
+
+.memberAvatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: $color-primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: $spacing-md;
+  flex-shrink: 0;
+}
+
+.memberInitial {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+}
+
+.memberSummaryInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.memberSummaryNameRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: 6rpx;
+}
+
+.memberSummaryName {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.memberRoleTag {
+  padding: 2rpx 10rpx;
+  background: rgba(255, 107, 53, 0.1);
+  border-radius: $radius-round;
+}
+
+.memberRoleText {
+  font-size: $font-size-xs;
+  color: $color-primary;
+}
+
+.memberSummaryProgress {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.memberSummaryBar {
+  flex: 1;
+  height: 12rpx;
+  background: $color-bg-gray;
+  border-radius: $radius-round;
+  overflow: hidden;
+}
+
+.memberSummaryFill {
+  height: 100%;
+  background: linear-gradient(90deg, $color-quota 0%, $color-primary 100%);
+  border-radius: $radius-round;
+}
+
+.memberSummaryValue {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-quota;
+  width: 120rpx;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.recordsList {
+  padding: 0;
+}
+
+.recordItem {
+  display: flex;
+  align-items: flex-start;
+  padding: $spacing-md $spacing-lg;
+  border-bottom: 1rpx solid $color-divider;
+  gap: $spacing-md;
+}
+
+.recordItem:last-child {
+  border-bottom: none;
+}
+
+.recordItemSelected {
+  background: rgba(255, 107, 53, 0.04);
+}
+
+.recordIcon {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 4rpx;
+}
+
+.recordIconRecharge { background: rgba(255, 107, 53, 0.12); }
+.recordIconDeduct { background: rgba(155, 89, 182, 0.12); }
+.recordIconRefund { background: rgba(46, 196, 182, 0.12); }
+.recordIconAdjust { background: rgba(134, 144, 156, 0.12); }
+
+.recordIconText {
+  font-size: 36rpx;
+}
+
+.recordMain {
+  flex: 1;
+  min-width: 0;
+}
+
+.recordTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6rpx;
+}
+
+.recordDesc {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  flex: 1;
+  @include text-ellipsis;
+  margin-right: $spacing-sm;
+}
+
+.recordAmount {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  flex-shrink: 0;
+}
+
+.amountDeduct { color: $color-quota; }
+.amountRecharge { color: $color-success; }
+.amountRefund { color: $color-info; }
+.amountAdjust { color: $color-text-secondary; }
+
+.recordMetaRow {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: 4rpx;
+  flex-wrap: wrap;
+}
+
+.recordMetaText {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.recordBalanceRow {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  margin-top: 6rpx;
+}
+
+.recordBalanceLabel {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.recordBalanceValue {
+  font-size: $font-size-xs;
+  color: $color-quota;
+  font-weight: $font-weight-semibold;
+}
+
+.recordExpander {
+  padding: $spacing-sm $spacing-lg $spacing-md;
+  background: rgba(255, 107, 53, 0.04);
+  border-top: 1rpx dashed $color-divider;
+}
+
+.detailSection {
+  margin-bottom: $spacing-md;
+}
+
+.detailSection:last-child {
+  margin-bottom: 0;
+}
+
+.detailTitle {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-bottom: 8rpx;
+}
+
+.detailItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8rpx 0;
+}
+
+.detailLabel {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+.detailValue {
+  font-size: $font-size-xs;
+  color: $color-text-primary;
+  font-weight: $font-weight-medium;
+}
+
+.emptyState {
+  padding: 100rpx 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.emptyIcon {
+  font-size: 100rpx;
+  margin-bottom: $spacing-md;
+  opacity: 0.4;
+}
+
+.emptyText {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.reconcileTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 6rpx 14rpx;
+  background: rgba(0, 180, 42, 0.1);
+  border-radius: $radius-round;
+  margin-top: $spacing-xs;
+}
+
+.reconcileTagText {
+  font-size: $font-size-xs;
+  color: $color-success;
+  font-weight: $font-weight-semibold;
+}
+
+.reconcileWarn {
+  background: rgba(255, 125, 0, 0.1);
+}
+
+.reconcileWarnText {
+  color: $color-warning;
+}

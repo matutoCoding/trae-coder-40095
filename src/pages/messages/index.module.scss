@@ -1,0 +1,213 @@
+.page {
+  min-height: 100vh;
+  background: $color-bg-page;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md $spacing-lg;
+  background: $color-bg-white;
+  border-bottom: 1rpx solid $color-divider;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.headerTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.unreadBadge {
+  padding: 4rpx 16rpx;
+  background: $color-error;
+  border-radius: $radius-round;
+  min-width: 40rpx;
+  text-align: center;
+}
+
+.unreadBadgeText {
+  font-size: $font-size-xs;
+  color: $color-text-white;
+  font-weight: $font-weight-bold;
+}
+
+.readAllBtn {
+  padding: 8rpx 16rpx;
+  background: $color-bg-gray;
+  border-radius: $radius-round;
+}
+
+.readAllBtnText {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+}
+
+.tabs {
+  display: flex;
+  padding: $spacing-sm $spacing-md;
+  background: $color-bg-white;
+  gap: $spacing-sm;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.tabItem {
+  padding: 12rpx 24rpx;
+  border-radius: $radius-round;
+  background: $color-bg-gray;
+  flex-shrink: 0;
+}
+
+.tabItemActive {
+  background: rgba(255, 107, 53, 0.1);
+}
+
+.tabText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  font-weight: $font-weight-medium;
+}
+
+.tabTextActive {
+  color: $color-primary;
+  font-weight: $font-weight-semibold;
+}
+
+.messagesList {
+  padding: $spacing-md;
+}
+
+.messageCard {
+  background: $color-bg-white;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-sm;
+  position: relative;
+}
+
+.messageCardUnread {
+  background: linear-gradient(135deg, rgba(255, 107, 53, 0.04) 0%, #fff 100%);
+}
+
+.unreadDot {
+  position: absolute;
+  top: $spacing-md;
+  right: $spacing-md;
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: $color-error;
+}
+
+.messageHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: $spacing-md;
+  margin-bottom: $spacing-sm;
+}
+
+.iconBox {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.iconText {
+  font-size: 40rpx;
+}
+
+.messageInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.messageTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 6rpx;
+}
+
+.messageTime {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.messageContent {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: 1.6;
+  padding-left: 0;
+  padding-right: 40rpx;
+}
+
+.actionTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8rpx;
+  margin-top: $spacing-md;
+  padding: 12rpx 20rpx;
+  background: linear-gradient(135deg, $color-primary-bg 0%, rgba(255, 107, 53, 0.12) 100%);
+  border-radius: $radius-md;
+}
+
+.actionTagText {
+  font-size: $font-size-sm;
+  color: $color-primary;
+  font-weight: $font-weight-semibold;
+}
+
+.actionTagArrow {
+  font-size: $font-size-sm;
+  color: $color-primary;
+}
+
+.emptyState {
+  padding: 200rpx 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.emptyIcon {
+  font-size: 120rpx;
+  margin-bottom: $spacing-md;
+  opacity: 0.4;
+}
+
+.emptyText {
+  font-size: $font-size-md;
+  color: $color-text-tertiary;
+}
+
+.metaBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4rpx 12rpx;
+  background: $color-bg-gray;
+  border-radius: $radius-sm;
+  margin-right: 8rpx;
+  margin-top: 8rpx;
+}
+
+.metaBadgeText {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}

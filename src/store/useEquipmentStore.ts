@@ -21,6 +21,9 @@ interface EquipmentState {
     equipmentId: string;
     quantity: number;
     bookingId?: string;
+    bookingRouteName?: string;
+    bookingDate?: string;
+    bookingTimeRange?: string;
     userId?: string;
     userName?: string;
     teamId?: string;
@@ -66,7 +69,7 @@ export const useEquipmentStore = create<EquipmentState>((set, get) => ({
     return equipment?.availableStock || 0;
   },
 
-  rentEquipment: async ({ equipmentId, quantity, bookingId, userId, userName, teamId }) => {
+  rentEquipment: async ({ equipmentId, quantity, bookingId, bookingRouteName, bookingDate, bookingTimeRange, userId, userName, teamId }) => {
     const { equipments, currentUserId, currentUserName } = get();
     const equipment = equipments.find((e) => e.id === equipmentId);
 
@@ -89,6 +92,9 @@ export const useEquipmentStore = create<EquipmentState>((set, get) => ({
       userName: userName || currentUserName,
       teamId: teamId || 'team_001',
       bookingId,
+      bookingRouteName,
+      bookingDate,
+      bookingTimeRange,
       quantity,
       price: equipment.price,
       deposit: equipment.deposit * quantity,
@@ -138,7 +144,8 @@ export const useEquipmentStore = create<EquipmentState>((set, get) => ({
           ? {
               ...r,
               status: 'returned',
-              statusText: '已归还',
+              statusText: '到店归还',
+              returnSource: 'checkin_return' as const,
               returnTime: now.toISOString(),
               totalCost
             }
@@ -153,7 +160,7 @@ export const useEquipmentStore = create<EquipmentState>((set, get) => ({
   cancelRentalsByBookingId: async (bookingId) => {
     const { rentalRecords } = get();
     const relatedRentals = rentalRecords.filter(
-      (r) => r.bookingId === bookingId && (r.status === 'rented')
+      (r) => r.bookingId === bookingId && r.status === 'rented'
     );
 
     if (relatedRentals.length === 0) {
@@ -181,8 +188,9 @@ export const useEquipmentStore = create<EquipmentState>((set, get) => ({
         if (r.bookingId === bookingId && r.status === 'rented') {
           return {
             ...r,
-            status: 'returned' as const,
-            statusText: '已取消',
+            status: 'cancelled' as const,
+            statusText: '取消释放',
+            returnSource: 'booking_cancel' as const,
             returnTime: now.toISOString(),
             totalCost: 0
           };

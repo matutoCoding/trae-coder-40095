@@ -7,7 +7,10 @@ export default defineAppConfig({
     'pages/mine/index',
     'pages/route-detail/index',
     'pages/waitlist/index',
-    'pages/booking-confirm/index'
+    'pages/booking-confirm/index',
+    'pages/checkin/index',
+    'pages/messages/index',
+    'pages/team-bill/index'
   ],
   window: {
     backgroundTextStyle: 'light',
